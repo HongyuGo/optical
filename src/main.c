@@ -1,19 +1,23 @@
 #include "main.h"
 
 int main() {
-	int* ptr = (int*)malloc(sizeof(int));
-	*ptr = 7;
-    free(ptr);
-	// int maxErrs = 100;
-	// int maxBits = 1e6;
-    // int lamda = 0.405;
-    // double NA = 0.65;
-    // double t0 = 0.86 * lamda / NA;
-    // int T = 1;
-    // double TL = 0.102;
-    // double S = t0 / TL;
+    const int rows = 2;
+    const int cols = 3;
+    int raw_data[2][3] = {{1, 2, 3}, {4, 5, 6}};
+    Matrix* mat = Matrix_gen(rows, cols, (int*)raw_data);
+    M_free(mat);
 
 #if 0
+    int maxErrs = 100;
+    int maxBits = 1e6;
+    int lamda = 0.405;
+    double NA = 0.65;
+    double t0 = 0.86 * lamda / NA;
+    int T = 1;
+    double TL = 0.102;
+    double S = t0 / TL;
+
+
 
     int gpr_target = (1, 2, 2, 2, 1);
     int gpr_length = len(gpr_target);
@@ -55,5 +59,4 @@ int main() {
         }
     }
 #endif
-
 }

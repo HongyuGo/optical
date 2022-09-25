@@ -28,13 +28,19 @@ $(TARGET): $(OBJS) $(HEADS)
 run: all
 	@./$(TARGET)
 
-.PHONY: depend clean checkmm
+.PHONY: depend clean checkmm format install
 depend:
 	$(CC) $(INCLUDES) -MM $(SRCS) > $(DEPS)
 	@sed -i -E "s/^(.+?).o: ([^ ]+?)\1/\2\1.o: \2\1/g" $(DEPS)
 
 clean:
 	$(RM) $(OBJS) $(TARGET)
+
+install:
+	sudo apt-get update && sudo apt-get upgrade && sudo apt-get -y install gcc g++ valgrind make clang-format
+
+format:
+	clang-format -i -style=file include/*.h src/*.c
 
 checkmm:
 	valgrind --trace-children=yes \
