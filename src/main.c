@@ -1,62 +1,57 @@
 #include "main.h"
 
 int main() {
-    const int rows = 2;
-    const int cols = 3;
-    int raw_data[2][3] = {{1, 2, 3}, {4, 5, 6}};
-    Matrix* mat = Matrix_gen(rows, cols, (int*)raw_data);
-    M_free(mat);
-
-#if 0
-    int maxErrs = 100;
-    int maxBits = 1e6;
-    int lamda = 0.405;
-    double NA = 0.65;
-    double t0 = 0.86 * lamda / NA;
-    int T = 1;
-    double TL = 0.102;
-    double S = t0 / TL;
-
-
-
-    int gpr_target = (1, 2, 2, 2, 1);
-    int gpr_length = len(gpr_target);
-    int fir_length = 13; // Must be an odd number.
-    int edge_width = (fir_length - 1) / 2;
-
-
-    string constraint = "centre";
-    char method = '1';
-    int rate = 3 / 5;
-    sigma_jitter = 0.01 * TL;
-    % jitter noise
-            approx = 'f';
-    % channel approximation mode : 'f', '1', '2'.
-
-                                             SNR = 29;
-    BER = zeros(length(SNR), 1);
-
-    numBits = 0;
-    numErrs = 0;
-    while (numErrs1 < maxErrs && numBits < maxBits)
+    // int gpr_target[5] ={1, 2,2,2, 1};
+    // int gpr_length = sizeof(gpr_target)/sizeof(int);
+    // int pr2_target[5] = {1,2,2,2,1};
+    // int pr2_length = sizeof(pr2_target)/sizeof(int);
+    int SNR_len = sizeof(SNR)/sizeof(int);
+    Matrix* BER1 = M_Zeros(SNR_len,1);
+    Matrix* BER2 = M_Zeros(SNR_len, 1);
+    Matrix* BER3 = M_Zeros(SNR_len, 1);
+    
+    for(int isnr = 1; isnr <= SNR_len; isnr++)
     {
-        /*----------PRBS data--------------*/
-        ChannelBits = randi([0 1], 1, SectorLength);
-
-        ak = [ zeros(1, KWinLen), SectorLength ];
-        ak = ak * 2 - 1; // BPSK
-        dk = 1 / 2 * (ak(2
-                         : end) -
-                      ak(1
-                         : end - 1)); // (1-D) precoder
-        /*----------Readback signal--------*/
-        rk = zeros(1, SectorLength + KWinLen);
-        for (i = 1; i = i + 1; i <= SectorLength + 1 + KWinLen)
+        int numBits = 0;
+        // int numErrs = 0;
+        // int numERRs1 = 0;
+        // int numErrs2 = 0;
+        int numErrs3 = 0;
+        if(numErrs3 < maxErrs && numBits < maxBits)
         {
-            jitter = normrnd(0, sigma_jitter);
-            stdpos_d = i * T;
-            rk(i) = readback(stdpos_d, jitter, dk, S, T, TL);
+            //------------PRBS data---------------------
+            srand(1);
+            int rand_data[SectorLength + 1];
+            for(int i = 0; i < SectorLength; i++)
+                rand_data[i] = rand()%2;
+            Matrix *ChannelBits = Matrix_gen(1,SectorLength,rand_data);
+            //M_print(ChannelBits);
+            Matrix *tempInputPad = M_full(ChannelBits,0,0,1,0,0);
+            //M_print(tempInputPad);
+
+            //RLL encoder 
+            Matrix * codedwords = Matrix_copy(tempInputPad);
+            // int codedlen = codedwords->column;
+            // int CodedBitsLength = codedlen - 1;
+
+            Matrix *ak = M_full(codedwords,0,0,KWinLen,0,0);
+            int mul = 2;
+            ak = M_numsub(M_numul(ak,&mul,'i'),1);
+            M_print(ak);
+            Matrix *dk = Matrix_Transition(ak);
+            M_print(dk);
+            double mul2 = 0.5;
+            dk = M_numul(dk,&mul2,'d');
+            M_print(dk);
+
+            M_free(dk);
+            M_free(ak);
+            M_free(codedwords);
+            M_free(ChannelBits);
+            M_free(tempInputPad);
         }
     }
-#endif
+    M_free(BER1);
+    M_free(BER2);
+    M_free(BER3);
 }
