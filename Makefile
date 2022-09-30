@@ -23,7 +23,7 @@ LDFLAGS = -lm
 all: $(TARGET)
 
 $(TARGET): $(OBJS) $(HEADS)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS)
+	$(CC) -o $@ $(OBJS) $(LDFLAGS) 
 
 run: all
 	@./$(TARGET)
@@ -37,7 +37,7 @@ clean:
 	$(RM) $(OBJS) $(TARGET)
 
 install:
-	sudo apt-get update && sudo apt-get upgrade && sudo apt-get -y install gcc g++ valgrind make clang-format clangd-11 bear
+	sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y install gcc g++ valgrind make clang-format clangd-11 bear
 
 format:
 	clang-format -i -style=file include/*.h src/*.c
