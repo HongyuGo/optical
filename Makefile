@@ -12,7 +12,7 @@ INCLUDES = -I./include
 ifeq ($(MODE), DEBUG)
 CFLAGS = -O0 -g -ggdb -Wall -Wextra -Werror -Wno-unused-parameter -Wno-attributes -fno-omit-frame-pointer -fno-optimize-sibling-calls $(INCLUDES)
 else
-CFLAGS = -O2 -Wextra -Werror -Wno-unused-parameter -Wno-attributes $(INCLUDES)
+CFLAGS = -O2 -Wall -Wextra -Werror -Wno-unused-parameter -Wno-attributes $(INCLUDES)
 endif
 
 
