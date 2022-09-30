@@ -4,7 +4,7 @@
 #define _END_ -1
 #define _HEAD_ 1
 #define _DETAILED_ 2
-#define MATRIX_TYPE int
+#define MATRIX_TYPE double
 #define PRECISION "%d\t"
 
 #define Matrix_Transition_001 "@ERROR: 输入矩阵不能为空"

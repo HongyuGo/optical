@@ -162,7 +162,7 @@ int M_print(Matrix* _mat) {
     printf("row:%d col:%d\n", _mat->row, _mat->column);
     for (i = 0; i < _mat->row; i++) {
         for (j = 0; j < _mat->column; j++) {
-            printf(PRECISION, _mat->data[i * (_mat->column) + j]);
+            printf(PRECISION, (int)_mat->data[i * (_mat->column) + j]);
         }
         printf("\n");
     }
@@ -170,12 +170,11 @@ int M_print(Matrix* _mat) {
 }
 /*Matrix Multiply
 矩阵数乘*/
-Matrix* M_numul(Matrix* _mat, void* _num, char type) {
+Matrix* M_numul(Matrix* _mat, double _num) {
     MATRIX_TYPE* data = _mat->data;
     int Size_mat = (_mat->row) * (_mat->column), i;
     for (i = 0; i < Size_mat; i++) {
-        if (type == 'i') data[i] = data[i] * (*(int*)_num);
-        if (type == 'd') data[i] = data[i] * (*(double*)_num);
+        data[i] = data[i] * _num;
     }
     return _mat;
 }

@@ -21,7 +21,7 @@ int main() {
         {
             //------------PRBS data---------------------
             srand(1);
-            int rand_data[SectorLength + 1];
+            double rand_data[SectorLength + 1];
             for(int i = 0; i < SectorLength; i++)
                 rand_data[i] = rand()%2;
             Matrix *ChannelBits = Matrix_gen(1,SectorLength,rand_data);
@@ -35,13 +35,11 @@ int main() {
             // int CodedBitsLength = codedlen - 1;
 
             Matrix *ak = M_full(codedwords,0,0,KWinLen,0,0);
-            int mul = 2;
-            ak = M_numsub(M_numul(ak,&mul,'i'),1);
+            ak = M_numsub(M_numul(ak,2),1);
             M_print(ak);
             Matrix *dk = Matrix_Transition(ak);
             M_print(dk);
-            double mul2 = 0.5;
-            dk = M_numul(dk,&mul2,'d');
+            dk = M_numul(dk,0.5);
             M_print(dk);
 
             M_free(dk);
