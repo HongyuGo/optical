@@ -55,4 +55,6 @@ Makefile.depend
 app
 compile_commands.json
 .cache/
+
+!.vscode/launch.json
 .vscode/
