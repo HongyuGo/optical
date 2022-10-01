@@ -5,7 +5,7 @@
 #define _HEAD_ 1
 #define _DETAILED_ 2
 #define MATRIX_TYPE double
-#define PRECISION "%d\t"
+#define PRECISION "%3lf\t"
 
 #define Matrix_Transition_001 "@ERROR: 输入矩阵不能为空"
 #define Matrix_Transition_002 "@ERROR: 输入矩阵column必须大于1，才能生成跃迁矩阵"

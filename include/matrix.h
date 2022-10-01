@@ -17,7 +17,7 @@ Matrix* M_add_sub(MATRIX_TYPE scale_mat_subed, Matrix* _mat_subed, MATRIX_TYPE s
 Matrix* M_Cut(Matrix* _mat, int row_head, int row_tail, int column_head, int column_tail);
 Matrix* M_full(Matrix* _mat, int row_up, int row_down, int column_left, int column_right, MATRIX_TYPE full_data);
 Matrix* M_Zeros(int row, int column);
-int M_print(Matrix* _mat);
+int M_print(Matrix* _mat, const char *name);
 Matrix* M_numul(Matrix* _mat, double _num);
 Matrix* M_numsub(Matrix* _mat, MATRIX_TYPE _num);
 Matrix* Matrix_Transition(Matrix* _mat);

@@ -157,12 +157,12 @@ Matrix* M_Zeros(int row, int column) {
 }
 /*Print Matrix
 打印矩阵*/
-int M_print(Matrix* _mat) {
+int M_print(Matrix* _mat, const char *name) {
     int i, j;
-    printf("row:%d col:%d\n", _mat->row, _mat->column);
+    printf("%s row:%d col:%d\n",name, _mat->row, _mat->column);
     for (i = 0; i < _mat->row; i++) {
         for (j = 0; j < _mat->column; j++) {
-            printf(PRECISION, (int)_mat->data[i * (_mat->column) + j]);
+            printf(PRECISION, _mat->data[i * (_mat->column) + j]);
         }
         printf("\n");
     }
