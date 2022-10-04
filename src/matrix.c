@@ -1,7 +1,7 @@
 #include "matrix.h"
 
-/* Generate Matrix Struct 导入_生成矩阵
- */
+/* Generate Matrix Struct 
+导入_生成矩阵*/
 Matrix* Matrix_gen(int row, int column, MATRIX_TYPE* data) {
     Matrix* _mat = (Matrix*)malloc(sizeof(Matrix));
     if (_mat == NULL) return 0;
@@ -15,27 +15,22 @@ Matrix* Matrix_gen(int row, int column, MATRIX_TYPE* data) {
     }
     return _mat;
 }
-
 /* Copy Mtrix(gen new one)
-         复制矩阵（生成新矩阵）*/
+复制矩阵（生成新矩阵）*/
 Matrix* Matrix_copy(Matrix* _mat_sourse) {
     Matrix* _mat_copy = Matrix_gen(_mat_sourse->row, _mat_sourse->column, _mat_sourse->data);
     return _mat_copy;
 }
-
 /* Free Memory
-   释放矩阵，释放内存
-*/
+释放矩阵，释放内存*/
 int M_free(Matrix* _mat) {
     free(_mat->data);
     //(_DETAILED_ >= 3) ? printf(">>Matrix_%x has been freed.\n", _mat) : 0;
     free(_mat);
     return 0;
 }
-
 /* Add & Sub
-矩阵加减法
-*/
+矩阵加减法*/
 Matrix* M_add_sub(MATRIX_TYPE scale_mat_subed, Matrix* _mat_subed, MATRIX_TYPE scale_mat_minus, Matrix* _mat_minus) {
     Matrix* _mat_result = NULL;
     if ((_mat_subed->column == _mat_minus->column) && (_mat_subed->row == _mat_minus->row)) {
@@ -49,7 +44,6 @@ Matrix* M_add_sub(MATRIX_TYPE scale_mat_subed, Matrix* _mat_subed, MATRIX_TYPE s
     }
     return _mat_result;
 }
-
 /*Cut_out_part_of_Matrix
 切取部分矩阵*/
 Matrix* M_Cut(Matrix* _mat, int row_head, int row_tail, int column_head, int column_tail) {
@@ -115,7 +109,6 @@ Matrix* M_Cut(Matrix* _mat, int row_head, int row_tail, int column_head, int col
     }
     return mat_result;
 }
-
 /*Full
 填充矩阵*/
 Matrix* M_full(Matrix* _mat, int row_up, int row_down, int column_left, int column_right, MATRIX_TYPE full_data) {
@@ -188,7 +181,7 @@ Matrix* M_numsub(Matrix* _mat, MATRIX_TYPE _num) {
     return _mat;
 }
 /*跃迁矩阵生成*/
-Matrix* Matrix_Transition(Matrix* _mat) {
+Matrix* M_Transition(Matrix* _mat) {
     if (_mat == NULL) {
         printf(Matrix_Transition_001);
         return NULL;
@@ -211,3 +204,26 @@ Matrix* Matrix_Transition(Matrix* _mat) {
     _mat_result->data = _data;
     return _mat_result;
 }
+/*Find min-position in a MATRIX_TYPE[*]
+找到行矩阵中最小的值*/
+MATRIX_TYPE M_Min_value(MATRIX_TYPE *data, int size) {
+    MATRIX_TYPE Val_min = data[size - 1];
+    for (int i = size - 2; i >= 0; i--) {
+        if (data[i] <= Val_min) {
+            Val_min = data[i];
+        }
+    }
+    return Val_min;
+}
+/*Find max value in a MATRIX_TYPE[*]
+找到行矩阵中最大的值*/
+MATRIX_TYPE M_Max_value(MATRIX_TYPE *data, int size) {
+    MATRIX_TYPE Val_max = data[size - 1];
+    for (int i = size - 2; i >= 0; i--) {
+        if (data[i] >= Val_max) {
+            Val_max = data[i];
+        }
+    }
+    return Val_max;
+}
+

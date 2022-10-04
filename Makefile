@@ -37,7 +37,7 @@ clean:
 	$(RM) $(OBJS) $(TARGET)
 
 install:
-	sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y install gcc g++ valgrind make clang-format clangd-11 bear
+	sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y install gcc g++ valgrind make clang-format clangd-10 bear
 
 format:
 	clang-format -i -style=file include/*.h src/*.c

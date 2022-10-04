@@ -41,7 +41,7 @@ int main() {
             Matrix *ak = M_full(codedwords,0,0,KWinLen,0,0);
             ak = M_numsub(M_numul(ak,2),1);
             //M_print(ak,"ak");
-            Matrix *dk = Matrix_Transition(ak);
+            Matrix *dk = M_Transition(ak);
             dk = M_numul(dk,0.5);
             //M_print(dk,"dk");
             Matrix* rk = M_Zeros(1,CodedBitsLength + 1 + KWinLen);
@@ -50,6 +50,14 @@ int main() {
                 double stdpos_d = (i + 1) * T;
                 rk->data[i] = readback(stdpos_d,jitter,dk,S,T,TL);
             }
+            //-------------Normalization----------------
+            MATRIX_TYPE min_rk = M_Min_value(rk->data,rk->column);
+            MATRIX_TYPE max_rk = M_Max_value(rk->data,rk->column);
+            for(int Norma_i = 0; Norma_i < rk->column; Norma_i++)
+            {
+                rk->data[Norma_i] = 2.0 * (rk->data[Norma_i] - min_rk)/(max_rk - min_rk) - 1.0;
+            }
+            
             M_print(rk,"rk");
             M_free(rk);
             M_free(dk);
