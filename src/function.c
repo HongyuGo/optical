@@ -1,5 +1,6 @@
 #include "function.h"
 #include <math.h>
+#include "matrix.h"
 
 double h_response(double t, double TL, double S) { return erf(t / S / TL); }
 
@@ -12,4 +13,9 @@ double readback(double t, double jitter, Matrix* d, double S, double T, double T
         rs = rs + tmp;
     }
     return rs;
+}
+
+void gen_firtaps_v2(Matrix *random, Matrix *ampled, MATRIX_TYPE* gpr_coeff, int fir_len, const char * constraint,char method)
+{
+
 }

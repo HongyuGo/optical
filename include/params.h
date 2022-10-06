@@ -11,10 +11,11 @@
 #define S ((t0) / (TL))
 #define SectorLength (5)
 #define delta (0.1)
-#define fir_length (13)
 #define edge_width (((fir_length)-1) / 2)
 #define sigma_jitter ((0.01) * (TL))
 #define KWinLen 1
 
 extern int SNR;
+extern const char constraint[6];
+extern char method;
 #endif

@@ -1,8 +1,9 @@
 #include "main.h"
 
 int main() {
-    // int gpr_target[5] ={1, 2,2,2, 1};
-    // int gpr_length = sizeof(gpr_target)/sizeof(int);
+    MATRIX_TYPE gpr_target[5] ={1, 2,2,2, 1};
+    //int gpr_length = sizeof(gpr_target)/sizeof(MATRIX_TYPE);
+    int fir_length = 13;
     // int pr2_target[5] = {1,2,2,2,1};
     // int pr2_length = sizeof(pr2_target)/sizeof(int);
     int SNR_len = sizeof(SNR)/sizeof(int);
@@ -57,8 +58,14 @@ int main() {
             {
                 rk->data[Norma_i] = 2.0 * (rk->data[Norma_i] - min_rk)/(max_rk - min_rk) - 1.0;
             }
+            Matrix *rk_normarlized = Matrix_copy(rk);
+            //------------Equqlization and Detection of Original Signal------------------------
+            // PR Equalizer-ML
+            gen_firtaps_v2(ak,rk_normarlized,
+                        gpr_target,fir_length,constraint,method);
             
             M_print(rk,"rk");
+            M_free(rk_normarlized);
             M_free(rk);
             M_free(dk);
             M_free(ak);

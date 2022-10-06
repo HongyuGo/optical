@@ -1,7 +1,6 @@
 #include "matrix.h"
 
-/* Generate Matrix Struct 
-导入_生成矩阵*/
+/* Generate Matrix Struct */
 Matrix* Matrix_gen(int row, int column, MATRIX_TYPE* data) {
     Matrix* _mat = (Matrix*)malloc(sizeof(Matrix));
     if (_mat == NULL) return 0;
@@ -15,22 +14,19 @@ Matrix* Matrix_gen(int row, int column, MATRIX_TYPE* data) {
     }
     return _mat;
 }
-/* Copy Mtrix(gen new one)
-复制矩阵（生成新矩阵）*/
+/* Copy Mtrix(gen new one)*/
 Matrix* Matrix_copy(Matrix* _mat_sourse) {
     Matrix* _mat_copy = Matrix_gen(_mat_sourse->row, _mat_sourse->column, _mat_sourse->data);
     return _mat_copy;
 }
-/* Free Memory
-释放矩阵，释放内存*/
+/* Free Memory*/
 int M_free(Matrix* _mat) {
     free(_mat->data);
     //(_DETAILED_ >= 3) ? printf(">>Matrix_%x has been freed.\n", _mat) : 0;
     free(_mat);
     return 0;
 }
-/* Add & Sub
-矩阵加减法*/
+/* Add & Sub*/
 Matrix* M_add_sub(MATRIX_TYPE scale_mat_subed, Matrix* _mat_subed, MATRIX_TYPE scale_mat_minus, Matrix* _mat_minus) {
     Matrix* _mat_result = NULL;
     if ((_mat_subed->column == _mat_minus->column) && (_mat_subed->row == _mat_minus->row)) {
@@ -44,8 +40,7 @@ Matrix* M_add_sub(MATRIX_TYPE scale_mat_subed, Matrix* _mat_subed, MATRIX_TYPE s
     }
     return _mat_result;
 }
-/*Cut_out_part_of_Matrix
-切取部分矩阵*/
+/*Cut_out_part_of_Matrix*/
 Matrix* M_Cut(Matrix* _mat, int row_head, int row_tail, int column_head, int column_tail) {
     Matrix* mat_result = NULL;
     if (row_tail < 0) {
@@ -109,8 +104,7 @@ Matrix* M_Cut(Matrix* _mat, int row_head, int row_tail, int column_head, int col
     }
     return mat_result;
 }
-/*Full
-填充矩阵*/
+/*Full*/
 Matrix* M_full(Matrix* _mat, int row_up, int row_down, int column_left, int column_right, MATRIX_TYPE full_data) {
     Matrix* mat_result = NULL;
     mat_result = (Matrix*)malloc(sizeof(Matrix));
@@ -134,8 +128,7 @@ Matrix* M_full(Matrix* _mat, int row_up, int row_down, int column_left, int colu
     }
     return mat_result;
 }
-/*Generate Zeros _matrix
-生成全零矩阵*/
+/*Generate Zeros _matrix*/
 Matrix* M_Zeros(int row, int column) {
     Matrix* Zero_mat = (Matrix*)malloc(sizeof(Matrix));
     Zero_mat->column = column;
@@ -148,8 +141,7 @@ Matrix* M_Zeros(int row, int column) {
     Zero_mat->data = data;
     return Zero_mat;
 }
-/*Print Matrix
-打印矩阵*/
+/*Print Matrix*/
 int M_print(Matrix* _mat, const char *name) {
     int i, j;
     printf("%s row:%d col:%d\n",name, _mat->row, _mat->column);
@@ -161,8 +153,7 @@ int M_print(Matrix* _mat, const char *name) {
     }
     return 0;
 }
-/*Matrix Multiply
-矩阵数乘*/
+/*Matrix Multiply*/
 Matrix* M_numul(Matrix* _mat, double _num) {
     MATRIX_TYPE* data = _mat->data;
     int Size_mat = (_mat->row) * (_mat->column), i;
@@ -171,7 +162,7 @@ Matrix* M_numul(Matrix* _mat, double _num) {
     }
     return _mat;
 }
-/*矩阵数减*/
+/*Matrix sub*/
 Matrix* M_numsub(Matrix* _mat, MATRIX_TYPE _num) {
     MATRIX_TYPE* data = _mat->data;
     int Size_mat = (_mat->row) * (_mat->column), i;
@@ -180,7 +171,7 @@ Matrix* M_numsub(Matrix* _mat, MATRIX_TYPE _num) {
     }
     return _mat;
 }
-/*跃迁矩阵生成*/
+/*Generation of transition matrix*/
 Matrix* M_Transition(Matrix* _mat) {
     if (_mat == NULL) {
         printf(Matrix_Transition_001);
@@ -204,8 +195,7 @@ Matrix* M_Transition(Matrix* _mat) {
     _mat_result->data = _data;
     return _mat_result;
 }
-/*Find min-position in a MATRIX_TYPE[*]
-找到行矩阵中最小的值*/
+/*Find min value in a MATRIX_TYPE[*]*/
 MATRIX_TYPE M_Min_value(MATRIX_TYPE *data, int size) {
     MATRIX_TYPE Val_min = data[size - 1];
     for (int i = size - 2; i >= 0; i--) {
@@ -215,8 +205,7 @@ MATRIX_TYPE M_Min_value(MATRIX_TYPE *data, int size) {
     }
     return Val_min;
 }
-/*Find max value in a MATRIX_TYPE[*]
-找到行矩阵中最大的值*/
+/*Find max value in a MATRIX_TYPE[*]*/
 MATRIX_TYPE M_Max_value(MATRIX_TYPE *data, int size) {
     MATRIX_TYPE Val_max = data[size - 1];
     for (int i = size - 2; i >= 0; i--) {

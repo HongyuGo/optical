@@ -7,8 +7,8 @@
 #define MATRIX_TYPE double
 #define PRECISION "%3lf\t"
 
-#define Matrix_Transition_001 "@ERROR: 输入矩阵不能为空"
-#define Matrix_Transition_002 "@ERROR: 输入矩阵column必须大于1，才能生成跃迁矩阵"
+#define Matrix_Transition_001 "@ERROR: The input matrix cannot be empty"
+#define Matrix_Transition_002 "@ERROR: The input matrix column must greater than 1 to generate a transition matrix"
 #define M_add_sub_003 "@ERROR: Matrix_Dimensions Wrong!\n\tDetails:(M_add_sub_003)_mat_subed != _mat_minus\n"
 #define M_Cut_005 "@ERROR: Matrix_Cut Over!\n\tDetails:(M_Cut_005)_Cut_tail over_the limited\n"
 #define M_Cut_006 "@ERROR: Matrix_Cut Wrong!\n\tDetails:(M_Cut_006)_Head_>_Tail\n"
