@@ -16,6 +16,6 @@
 #define KWinLen 1
 
 extern int SNR;
-extern const char constraint[6];
+extern char constraint;
 extern char method;
 #endif

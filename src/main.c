@@ -1,4 +1,5 @@
 #include "main.h"
+#include <math.h>
 
 int main() {
     MATRIX_TYPE gpr_target[5] ={1, 2,2,2, 1};
@@ -40,7 +41,7 @@ int main() {
             int CodedBitsLength = codedlen - 1;
 
             Matrix *ak = M_full(codedwords,0,0,KWinLen,0,0);
-            ak = M_numsub(M_numul(ak,2),1);
+            ak = M_numsub(M_numul(ak,2.0),1.0);
             //M_print(ak,"ak");
             Matrix *dk = M_Transition(ak);
             dk = M_numul(dk,0.5);
@@ -63,8 +64,7 @@ int main() {
             // PR Equalizer-ML
             gen_firtaps_v2(ak,rk_normarlized,
                         gpr_target,fir_length,constraint,method);
-            
-            M_print(rk,"rk");
+            //M_print(rk,"rk");
             M_free(rk_normarlized);
             M_free(rk);
             M_free(dk);

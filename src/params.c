@@ -1,5 +1,5 @@
 #include "params.h"
 
 int SNR = 30;
-const char constraint[6] = "centre";
+char constraint = 'c';
 char method = '1';
