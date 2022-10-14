@@ -16,7 +16,7 @@ double readback(double t, double jitter, Matrix* d, double S, double T, double T
     return rs;
 }
 
-void gen_firtaps_v2(Matrix *random, Matrix *sampled, MATRIX_TYPE* gpr_coeff_data, int fir_len, char constraint,char method){
+Matrix** gen_firtaps_v2(Matrix *random, Matrix *sampled, MATRIX_TYPE* gpr_coeff_data, int fir_len, char constraint,char method){
     int gpr_len = 5;
     // int i,j;
     //int datalength = random->column;
@@ -62,21 +62,26 @@ void gen_firtaps_v2(Matrix *random, Matrix *sampled, MATRIX_TYPE* gpr_coeff_data
 
 
     MATRIX_TYPE lagrange = Caculate_lagrange(R_matrix,A_matrix,T_matrix,I_matrix);
-    printf("lagrange = %lf\n",lagrange);
+    //printf("lagrange = %lf\n",lagrange);
     //M_print(M_lagrange,"data");
 
     Matrix *gpr_coeff = Caculate_gpr_coeff(R_matrix,A_matrix,T_matrix,I_matrix,lagrange);
-    M_print(gpr_coeff,"gpr_coeff");
+    //M_print(gpr_coeff,"gpr_coeff");
 
     Matrix *fir_coeff = Caculate_fir_coeff(R_matrix,T_matrix,gpr_coeff);
-    M_print(fir_coeff,"fir_coeff");
+    //M_print(fir_coeff,"fir_coeff");
 
-    M_free(fir_coeff);
-    M_free(gpr_coeff);
+    Matrix **return_back = NULL;
+    return_back = (Matrix**)malloc(sizeof(Matrix*) * 2);
+    return_back[1] = gpr_coeff;
+    return_back[0] = fir_coeff;
+
     M_free(T_matrix);
     M_free(A_matrix);
     M_free(I_matrix);
     M_free(R_matrix);
+    return return_back;
+    
 }
 Matrix * auto_corr(Matrix * x, int bot , int top){
     int L = top - bot + 1;

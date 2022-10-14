@@ -69,10 +69,17 @@ int main() {
             // PR Equalizer-ML
             //M_print(ak,"ak");
             //M_print(rk_normarlized,"rk_normarlized");
-            gen_firtaps_v2(ak,rk_normarlized,
-                        gpr_target,fir_length,constraint,method);
-            
+            Matrix **return_back = gen_firtaps_v2(ak,rk_normarlized,
+                                    gpr_target,fir_length,constraint,method);
+            Matrix *fir_taps1 = return_back[0];
+            M_print(fir_taps1,"fir_taps1");
+            Matrix *gpr_coeff = return_back[1];
+            M_print(gpr_coeff,"gpr_coeff");
 
+            
+            free(return_back);
+            M_free(fir_taps1);
+            M_free(gpr_coeff);
             M_free(rk_normarlized);
             M_free(rk);
             M_free(dk);
