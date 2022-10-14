@@ -1,5 +1,6 @@
 #include "main.h"
 #include <math.h>
+#include "commom.h"
 
 int main() {
     MATRIX_TYPE gpr_target[5] ={1, 2,2,2, 1};
@@ -23,15 +24,19 @@ int main() {
         {
             #if 0
             //------------PRBS data---------------------
-            srand(1);
+            srand(3);
             MATRIX_TYPE rand_data[SectorLength + 1];
             for(int i = 0; i < SectorLength; i++)
                 rand_data[i] = rand()%2;
             Matrix *ChannelBits = Matrix_gen(1,SectorLength,rand_data);
+            M_print(ChannelBits,"ChannelBits");
             //M_print(ChannelBits);
             #endif
-            MATRIX_TYPE test_data[10] = {1.0,0,1.0,0,0,0,1.0,1.0,1.0,0};
-            Matrix *ChannelBits = Matrix_gen(1,10,test_data);
+            #define Test_len 30
+            MATRIX_TYPE test_data[Test_len] = {0,1,0,0,1,0,1,1,1,0,0,0,1,1,0,0,1,1,1,1,0,1,0,1,1,1,0,1,1,0};
+            //MATRIX_TYPE test_data[15] = {0,1,0,0,1,0,1,1,1,0,0,0,1,0,1};
+            Matrix *ChannelBits = Matrix_gen(1,Test_len,test_data);
+            //M_print(ChannelBits,"CH");
             Matrix *tempInputPad = M_full(ChannelBits,0,0,1,0,0);
             //M_print(tempInputPad);
 
@@ -62,9 +67,12 @@ int main() {
             Matrix *rk_normarlized = Matrix_copy(rk);
             //------------Equqlization and Detection of Original Signal------------------------
             // PR Equalizer-ML
+            //M_print(ak,"ak");
+            //M_print(rk_normarlized,"rk_normarlized");
             gen_firtaps_v2(ak,rk_normarlized,
                         gpr_target,fir_length,constraint,method);
-            //M_print(rk,"rk");
+            
+
             M_free(rk_normarlized);
             M_free(rk);
             M_free(dk);

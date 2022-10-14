@@ -9,7 +9,7 @@
 #define T (1)
 #define TL (0.102)
 #define S ((t0) / (TL))
-#define SectorLength (5)
+#define SectorLength (14)
 #define delta (0.1)
 #define edge_width (((fir_length)-1) / 2)
 #define sigma_jitter ((0.01) * (TL))

@@ -8,8 +8,10 @@
 #define _COLUMN_ 0
 #define MATRIX_TYPE double
 #define TRANS_TYPE  double
-#define PRECISION "%3lf\t"
+#define PRECISION "%.15lf\t"
+#define Caculate_limit 1000000
 
+#define M_mul_001 "@ERROR: Matrix_Dimensions Wrong!\n\tDetails:(M_mul_001)_mat_left->column != _mat_right->row\n"
 #define M_value_one_001 "@ERROR: M_value_one_001:The row or column entered is out of range"
 #define M_get_one_001 "@ERROR: M_get_one_001:The row or column entered is out of range"
 #define M_Transition_001 "@ERROR: The input matrix cannot be empty"

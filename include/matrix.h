@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "commom.h"
+#include "math.h"
 
 typedef struct {
     int row, column;
@@ -70,5 +71,9 @@ M_inv_struct *M_Lowtri_4inv(Matrix *_mat_source);
 Matrix *M_Dia_Inv(Matrix *_mat_source); 
 /*Inverse_Element_trans_to_Matrix*/
 Matrix *Etrans_4_Inverse(Matrix *_mat_result, Etrans_struct *_Etrans_, int line_setting); 
-
+/*Matrix Multiply*/
+Matrix *M_mul(Matrix *_mat_left, Matrix *_mat_right); 
+/*Transpose*/
+Matrix *M_T(Matrix *_mat_source); 
+Matrix *M_limit(Matrix *_mat);
 #endif
