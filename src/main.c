@@ -1,6 +1,5 @@
 #include "main.h"
-#include <math.h>
-#include "commom.h"
+#include <stdio.h>
 
 int main() {
     MATRIX_TYPE gpr_target[5] ={1, 2,2,2, 1};
@@ -22,8 +21,8 @@ int main() {
         int numErrs3 = 0;
         if(numErrs3 < maxErrs && numBits < maxBits)
         {
+            //------------Generate random data---------------------------------------
             #if 0
-            //------------PRBS data---------------------
             srand(3);
             MATRIX_TYPE rand_data[SectorLength + 1];
             for(int i = 0; i < SectorLength; i++)
@@ -32,8 +31,24 @@ int main() {
             M_print(ChannelBits,"ChannelBits");
             //M_print(ChannelBits);
             #endif
-            #define Test_len 30
-            MATRIX_TYPE test_data[Test_len] = {0,1,0,0,1,0,1,1,1,0,0,0,1,1,0,0,1,1,1,1,0,1,0,1,1,1,0,1,1,0};
+            //-------------------------------------------------------------------------
+
+            //------------Read data through file operation-----------------------------
+            FILE *fp = NULL;
+            fp = fopen("output.txt","r");
+            // MATRIX_TYPE test_data[Test_len];
+            // for(int i = 0; i < Test_len; i++){
+            //     fscanf(fp,"%lf",&test_data[i]);
+            // }
+            // for(int i = 0; i < Test_len; i++){
+            //     printf("%lf ",test_data[i]);
+            // }
+            // printf("\n");
+            fclose(fp);
+            //--------------------------------------------------------------------------
+
+            #define Test_len 32
+            MATRIX_TYPE test_data[Test_len] = {0,1,0,0,1,0,1,1,1,0,0,0,1,1,0,0,1,1,1,1,0,1,0,1,1,1,0,1,1,0,1,0};
             //MATRIX_TYPE test_data[15] = {0,1,0,0,1,0,1,1,1,0,0,0,1,0,1};
             Matrix *ChannelBits = Matrix_gen(1,Test_len,test_data);
             //M_print(ChannelBits,"CH");

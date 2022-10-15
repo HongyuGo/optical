@@ -38,9 +38,8 @@ Matrix** gen_firtaps_v2(Matrix *random, Matrix *sampled, MATRIX_TYPE* gpr_coeff_
     int K = (fir_len - 1) / 2;
     //printf("%d",K);
     Matrix * R_matrix = auto_corr(sampled,-K,K);
-    //R_matrix = M_Inverse(R_matrix);
-    //M_print(R_matrix,"R_matrix");
-    //M_print(R_matrix,"R_matrix");
+    // R_matrix = M_Inverse(R_matrix);
+    // M_print(R_matrix,"R_matrix");
     // for(i = 1; i < K; i++){
     //     for(j = 0; j < K; j++){
     //         M_value_one(R_matrix,i + 1,j + 1,M_get_one(R_matrix,1,abs(j - i) + 1));

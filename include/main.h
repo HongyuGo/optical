@@ -6,3 +6,4 @@
 #include "matrix.h"
 #include "params.h"
 #include "function.h"
+#include <math.h>
