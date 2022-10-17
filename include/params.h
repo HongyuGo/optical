@@ -22,7 +22,7 @@
 #define _COLUMN_ 0
 #define MATRIX_TYPE double
 #define TRANS_TYPE  double
-#define PRECISION "%.15lf  "
+#define PRECISION "%.5lf  "
 
 #define M_mul_001 "@ERROR: Matrix_Dimensions Wrong!\n\tDetails:(M_mul_001)_mat_left->column != _mat_right->row\n"
 #define M_value_one_001 "@ERROR: M_value_one_001:The row or column entered is out of range"
