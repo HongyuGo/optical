@@ -58,5 +58,6 @@ compile_commands.json
 
 !.vscode/launch.json
 .vscode/
-output.txt
 change.py
+output
+input.txt

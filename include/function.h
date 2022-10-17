@@ -2,6 +2,7 @@
 #define _FUNCTION_H_
 #include <math.h>
 #include "matrix.h"
+#include "params.h"
 
 double h_response(double, double, double);
 double readback(double ,double , Matrix * ,double ,double ,double);

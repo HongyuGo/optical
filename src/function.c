@@ -2,15 +2,16 @@
 #include <math.h>
 #include "matrix.h"
 #include "commom.h"
+#include "params.h"
 
-double h_response(double t, double TL, double S) { return erf(t / S / TL); }
+double h_response(double t, double TLL, double SS) { return erf(t / SS / TLL); }
 
-double readback(double t, double jitter, Matrix* d, double S, double T, double TL) {
+double readback(double t, double jitter, Matrix* d, double SS, double TT, double TLL) {
     int len = d->column;
     double rs = 0;
     double tmp = 0;
     for (int i = 0; i < len; i++) {
-        tmp = d->data[i] * h_response(t - (i + 1) * T + jitter, TL, S);
+        tmp = d->data[0][i] * h_response(t - (i + 1) * TT + jitter, TLL, SS);
         rs = rs + tmp;
     }
     return rs;
@@ -93,7 +94,7 @@ Matrix * auto_corr(Matrix * x, int bot , int top){
                 break;
            else{
             for(k = top + 1; k <= end + bot; k++){
-                sum += x->data[k - i - 1] * x->data[k - j - 1];
+                sum += x->data[0][k - i - 1] * x->data[0][k - j - 1];
             }
             prod = sum / (end + bot - (top + 1) + 1);
             sum = 0.0;
@@ -116,7 +117,7 @@ Matrix *cross_corr(Matrix * x, Matrix * y, int K, int L){
                 break;
             else{
                 for(k = 1 + tmp; k <= end - tmp; k++){
-                    sum += x->data[k - i - 1] * y->data[k - j - 1];
+                    sum += x->data[0][k - i - 1] * y->data[0][k - j - 1];
                 }
                 prod = sum / (end - tmp - (1 + tmp) + 1);
                 sum = 0.0;
@@ -151,7 +152,7 @@ MATRIX_TYPE Caculate_lagrange(Matrix *R_matrix, Matrix *A_matrix, Matrix *T_matr
     Matrix *M_lagrange = M_mul(I_A_TRT,I_matrix);
     M_free(I_A_TRT);
     
-    MATRIX_TYPE lagrange = 1.0/M_lagrange->data[0];
+    MATRIX_TYPE lagrange = 1.0/M_lagrange->data[0][0];
     M_free(M_lagrange);
     return lagrange;
 }
@@ -175,7 +176,7 @@ Matrix *Caculate_gpr_coeff(Matrix *R_matrix, Matrix *A_matrix, Matrix *T_matrix,
     M_free(A_TRT);
     M_free(A_TRT_inv);
 
-    gpr_coeff = M_numul(gpr_coeff,lagrange);
+    gpr_coeff = M_nummul(gpr_coeff,lagrange);
     return gpr_coeff;
 }
 Matrix *Caculate_fir_coeff(Matrix *R_matrix, Matrix *T_matrix, Matrix *gpr_coeff){

@@ -1,27 +1,49 @@
 #include "matrix.h"
 #include <assert.h>
-
+             
+MATRIX_TYPE** GetMemory(int row, int col){
+    MATRIX_TYPE ** data = NULL;
+    data = (MATRIX_TYPE **)malloc(sizeof(MATRIX_TYPE*) * row);
+    for(int i = 0; i < row; i++){
+        data[i] = (MATRIX_TYPE*)malloc(sizeof(MATRIX_TYPE) * col);
+    }
+    return data;
+}
 /* Generate Matrix Struct */
 Matrix* Matrix_gen(int row, int column, MATRIX_TYPE* data) {
     Matrix* _mat = (Matrix*)malloc(sizeof(Matrix));
     if (_mat == NULL) return 0;
+    int i,j;
     _mat->row = row;
     _mat->column = column;
-    size_t size = _mat->row * _mat->column;
-    _mat->data = (MATRIX_TYPE*)malloc((size) * sizeof(MATRIX_TYPE));
-    size_t i;
-    for (i = 0; i < size; i++) {
-        _mat->data[i] = data[i];
+    _mat->data = GetMemory(_mat->row,_mat->column); 
+    for (i = 0; i < row; i++) {
+        for(j = 0; j < column; j++){
+            _mat->data[i][j] = data[i * row + j];
+        }
     }
     return _mat;
 }
 /* Copy Mtrix(gen new one)*/
 Matrix* Matrix_copy(Matrix* _mat_sourse) {
-    Matrix* _mat_copy = Matrix_gen(_mat_sourse->row, _mat_sourse->column, _mat_sourse->data);
+    int row = _mat_sourse->row;
+    int col = _mat_sourse->column;
+    int size = row * col;
+    MATRIX_TYPE *data = (MATRIX_TYPE*)malloc(sizeof(MATRIX_TYPE) * size);
+    for(int i = 0; i < row; i++){
+        for(int j = 0; j < col; j++){
+            data[i * row + j] = _mat_sourse->data[i][j];
+        }
+    }
+    Matrix* _mat_copy = Matrix_gen(_mat_sourse->row, _mat_sourse->column, data);
+    free(data);
     return _mat_copy;
 }
 /* Free Memory*/
 int M_free(Matrix* _mat) {
+    for(int i = 0; i < _mat->row; i++){
+        free(_mat->data[i]);
+    }
     free(_mat->data);
     //(_DETAILED_ >= 3) ? printf(">>Matrix_%x has been freed.\n", _mat) : 0;
     free(_mat);
@@ -32,11 +54,13 @@ Matrix* M_add_sub(MATRIX_TYPE scale_mat_subed, Matrix* _mat_subed, MATRIX_TYPE s
     Matrix* _mat_result = NULL;
     if ((_mat_subed->column == _mat_minus->column) && (_mat_subed->row == _mat_minus->row)) {
         _mat_result = Matrix_copy(_mat_subed);
-        int size = (_mat_subed->row) * (_mat_subed->column), i;
-        for (i = 0; i < size; i++) {
-            _mat_result->data[i] = (_mat_result->data[i]) * scale_mat_subed - (_mat_minus->data[i]) * scale_mat_minus;
+        for(int i = 0; i < _mat_subed->row; i++){
+            for(int j = 0; j < _mat_subed->column; j++){
+                _mat_result->data[i][j] = (_mat_result->data[i][j]) * scale_mat_subed - (_mat_minus->data[i][j]) * scale_mat_minus;
+            }
         }
-    } else {
+    } 
+    else {
         printf(M_add_sub_003);
     }
     return _mat_result;
@@ -93,12 +117,13 @@ Matrix* M_Cut(Matrix* _mat, int row_head, int row_tail, int column_head, int col
             mat_result = (Matrix*)malloc(sizeof(Matrix));
             mat_result->row = row_tail - row_head;
             mat_result->column = column_tail - column_head;
-            mat_result->data = (MATRIX_TYPE*)malloc(sizeof(MATRIX_TYPE) * (mat_result->row) * (mat_result->column));
+            mat_result->data = GetMemory(mat_result->row,mat_result->column);
             int i, j;
             for (i = 0; i < (row_tail - row_head); i++) {
                 for (j = 0; j < (column_tail - column_head); j++) {
-                    mat_result->data[i * (mat_result->column) + j] =
-                        _mat->data[(i + row_head) * (_mat->column) + (j + column_head)];
+                    // mat_result->data[i * (mat_result->column) + j] =
+                    //     _mat->data[(i + row_head) * (_mat->column) + (j + column_head)];
+                    mat_result->data[i][j] = _mat->data[i+row_head][j+column_head];
                 }
             }
         }
@@ -111,19 +136,22 @@ Matrix* M_full(Matrix* _mat, int row_up, int row_down, int column_left, int colu
     mat_result = (Matrix*)malloc(sizeof(Matrix));
     mat_result->row = (_mat->row + row_up + row_down);
     mat_result->column = (_mat->column + column_left + column_right);
-    mat_result->data = (MATRIX_TYPE*)malloc(sizeof(MATRIX_TYPE) * (mat_result->row) * (mat_result->column));
+    mat_result->data = GetMemory(mat_result->row,mat_result->column);
     int i, j;
     for (i = 0; i < mat_result->row; i++) {
         for (j = 0; j < mat_result->column; j++) {
             if ((i >= row_up) && (i < (row_up + _mat->row))) { /*这里的双判断，可以优化*/
                 if ((j >= column_left) && (j < (column_left + _mat->column))) {
-                    mat_result->data[i * (mat_result->column) + j] =
-                        _mat->data[(_mat->column) * (i - row_up) + (j - column_left)];
+                    // mat_result->data[i * (mat_result->column) + j] =
+                    //     _mat->data[(_mat->column) * (i - row_up) + (j - column_left)];
+                    mat_result->data[i][j] = _mat->data[i -row_up][j - column_left];
                 } else {
-                    mat_result->data[i * (mat_result->column) + j] = full_data;
+                    // mat_result->data[i * (mat_result->column) + j] = full_data;
+                    mat_result->data[i][j] = full_data;
                 }
             } else {
-                mat_result->data[i * (mat_result->column) + j] = full_data;
+                // mat_result->data[i * (mat_result->column) + j] = full_data;
+                mat_result->data[i][j] = full_data;
             }
         }
     }
@@ -132,12 +160,14 @@ Matrix* M_full(Matrix* _mat, int row_up, int row_down, int column_left, int colu
 /*Generate Zeros _matrix*/
 Matrix* M_Zeros(int row, int column) {
     Matrix* Zero_mat = (Matrix*)malloc(sizeof(Matrix));
+    int i,j;
     Zero_mat->column = column;
     Zero_mat->row = row;
-    int size = row * column, i;
-    MATRIX_TYPE* data = (MATRIX_TYPE*)malloc((size) * sizeof(MATRIX_TYPE));
-    for (i = 0; i < size; i++) {
-        data[i] = 0;
+    MATRIX_TYPE** data = GetMemory(Zero_mat->row,Zero_mat->column);
+    for (i = 0; i < Zero_mat->row; i++) {
+        for(j = 0; j < Zero_mat->column; j++){
+            data[i][j] = 0;
+        }
     }
     Zero_mat->data = data;
     return Zero_mat;
@@ -148,27 +178,31 @@ int M_print(Matrix* _mat, const char *name) {
     printf("%s row:%d col:%d\n",name, _mat->row, _mat->column);
     for (i = 0; i < _mat->row; i++) {
         for (j = 0; j < _mat->column; j++) {
-            printf(PRECISION, _mat->data[i * (_mat->column) + j]);
+            printf(PRECISION, _mat->data[i][j]);
         }
         printf("\n");
     }
     return 0;
 }
 /*Matrix Multiply*/
-Matrix* M_numul(Matrix* _mat, double _num) {
-    MATRIX_TYPE* data = _mat->data;
-    int Size_mat = (_mat->row) * (_mat->column), i;
-    for (i = 0; i < Size_mat; i++) {
-        data[i] = data[i] * _num;
+Matrix* M_nummul(Matrix* _mat, double _num) {
+    MATRIX_TYPE** data = _mat->data;
+    int i, j;
+    for (i = 0; i < _mat->row; i++) {
+        for(j = 0; j < _mat->column; j++){
+            data[i][j] = data[i][j] * _num;
+        }
     }
     return _mat;
 }
 /*Matrix sub*/
 Matrix* M_numsub(Matrix* _mat, MATRIX_TYPE _num) {
-    MATRIX_TYPE* data = _mat->data;
-    int Size_mat = (_mat->row) * (_mat->column), i;
-    for (i = 0; i < Size_mat; i++) {
-        data[i] = data[i] - _num;
+    MATRIX_TYPE** data = _mat->data;
+    int i, j; 
+    for (i = 0; i < _mat->row; i++) {
+        for(j = 0; j < _mat->column; j++){
+            data[i][j] = data[i][j] - _num;
+        }
     }
     return _mat;
 }
@@ -183,12 +217,12 @@ Matrix* M_Transition(Matrix* _mat) {
         return NULL;
     }
     Matrix* _mat_result = NULL;
-    int row = _mat->row;
-    int col = _mat->column;
-    int size_data = row * col;
-    MATRIX_TYPE* _data = (MATRIX_TYPE*)malloc(sizeof(MATRIX_TYPE) * (row * col - 1));
-    for (int i = 0; i < size_data - 1; i++) {
-        _data[i] = _mat->data[i + 1] - _mat->data[i];
+    int row = _mat->row,col = _mat->column,i,j;
+    MATRIX_TYPE** _data = GetMemory(row,col);
+    for (i = 0; i < row; i++) {
+        for(j = 0; j < col - 1; j++){
+            _data[i][j] = _mat->data[i][j + 1] - _mat->data[i][j];
+        }
     }
     _mat_result = (Matrix*)malloc(sizeof(Matrix));
     _mat_result->row = row;
@@ -224,7 +258,7 @@ void M_value_one(Matrix *_mat, int row , int col,MATRIX_TYPE value){
         printf("%s\n",M_value_one_001);
         return;
     }
-    _mat->data[(row - 1) * _m_column + (col - 1)] = value;
+    _mat->data[row - 1][col - 1] = value;
 }
 /*Get a value to a position of the matrix*/
 MATRIX_TYPE M_get_one(Matrix *_mat, int row, int col){
@@ -234,258 +268,22 @@ MATRIX_TYPE M_get_one(Matrix *_mat, int row, int col){
         printf("%s\n",M_get_one_001);
         return 0.0;
     }
-    return _mat->data[(row - 1) * _m_column + (col - 1)];
+    return _mat->data[row - 1][col - 1];
 }
-/*Matrix inverse*/
-Matrix *M_Inverse(Matrix *_mat) {
-    //_mat = M_limit(_mat);
-    M_inv_struct *_Uptri_ = M_Uptri_4inv(_mat);
-    //M_print(_Uptri_->_matrix,"_Uptri_->_matrix");
-    M_inv_struct *_Lowtri_ = M_Lowtri_4inv(_Uptri_->_matrix);
-    //M_print(_Lowtri_->_matrix,"_Lowtri_->_matrix");
-    Matrix *_mat_dia_inv = M_Dia_Inv(_Lowtri_->_matrix);
-    //M_print(_mat_dia_inv,"_mat_diq_inv");
-    Matrix *_mat_inv = Etrans_4_Inverse(_mat_dia_inv, _Lowtri_->_Etrans_head, _ROW_);
-    //M_print(_mat_inv,"_mat_inv");
-    _mat_inv = Etrans_4_Inverse(_mat_inv, _Uptri_->_Etrans_head, _COLUMN_);
-    // 释放内存
-    M_free(_Uptri_->_matrix);
-    M_free(_Lowtri_->_matrix);
-    free(_Uptri_);
-    free(_Lowtri_);
-    return _mat_inv;
-}
-/*Upper_triangular_transformation_for_Inverse*/
-M_inv_struct *M_Uptri_4inv(Matrix *_mat_source) {/*Upper_triangular_transformation_for_Inverse
-	上三角化_求逆使用*/
-    Matrix *_mat = Matrix_copy(_mat_source);
-    int i, j, k, flag;
-    Etrans_struct *_Etrans_temp_last = NULL;
-    Etrans_struct *_Etrans_temp_head = NULL;
-
-    /*初等变换*/
-    for (i = 0; i < _mat->column; i++) {
-        for (j = i + 1; j < _mat->row; j++) {
-            flag = 0;
-            Etrans_struct *_Etrans_temp = (Etrans_struct *) malloc(sizeof(Etrans_struct));
-            _Etrans_temp->minuend_line = j + 1;
-            _Etrans_temp->subtractor_line = i + 1;
-            if ((_mat->data[(_mat->column) * i + i]) != 0) {
-                _Etrans_temp->scale = (_mat->data[(_mat->column) * j + i]) / (_mat->data[(_mat->column) * i + i]);
-            } else {
-                _Etrans_temp->scale = 0;
-                for (k = i + 1; k < _mat->row; k++) {
-                    flag = 1;//无可替代行
-                    if ((_mat->data[(_mat->column) * k + i]) != 0) {
-                        _Etrans_temp->minuend_line = -(i + 1);
-                        _Etrans_temp->subtractor_line = -(k + 1);
-                        flag = 2;//表示能够替换行
-                        break;
-                    }
-                }
-                if (flag == 1) {
-                    break;
-                }
-            }
-            _Etrans_temp->forward_E_trans = NULL;
-            _Etrans_temp->next_E_trans = NULL;
-            //if (j==1){
-            if (_Etrans_temp_head == NULL) {
-                _Etrans_temp_head = _Etrans_temp;
-                _Etrans_temp->forward_E_trans = NULL;
-            } else {
-                _Etrans_temp->forward_E_trans = _Etrans_temp_last;
-
-            }
-            if ((i + 1) == _mat->column) {
-                _Etrans_temp->next_E_trans = NULL;
-            } else {
-                if (_Etrans_temp_last != NULL) {
-                    _Etrans_temp_last->next_E_trans = _Etrans_temp;
-                }
-            }
-            M_E_trans(_mat, _Etrans_temp, _ROW_);
-            //M_print(_mat); //显示具体矩阵
-            _Etrans_temp_last = _Etrans_temp;
-
-            if (flag == 2) {
-                i = i - 1;
-                break;
-            }
+/*Transpose*/
+Matrix *M_T(Matrix *_mat_source) {
+    Matrix *_mat = (Matrix *) malloc(sizeof(Matrix));
+    _mat->column = _mat_source->row;
+    _mat->row = _mat_source->column;
+    MATRIX_TYPE **data = GetMemory(_mat->row,_mat->column);
+    _mat->data = data;
+    int i, j;
+    for (i = 0; i < (_mat->row); i++) {
+        for (j = 0; j < _mat->column; j++) {
+            data[i][j] = _mat_source->data[j][i];
         }
     }
-    M_inv_struct *_Uptri = (M_inv_struct *) malloc(sizeof(M_inv_struct));
-    _Uptri->_matrix = _mat;
-    _Uptri->_Etrans_head = _Etrans_temp_last;
-    return _Uptri;
-}
-/*_Lower_triangular_transformation_for_Inverse*/
-M_inv_struct *M_Lowtri_4inv(Matrix *_mat_source) {
-    Matrix *_mat = Matrix_copy(_mat_source);
-    int i, j, k, flag;
-    Etrans_struct *_Etrans_temp_last = NULL;
-    Etrans_struct *_Etrans_temp_head = NULL;
-    for (i = 0; i < _mat->row; i++) {
-        for (j = i + 1; j < _mat->column; j++) {
-            flag = 0;
-            Etrans_struct *_Etrans_temp = (Etrans_struct *) malloc(sizeof(Etrans_struct));
-            _Etrans_temp->minuend_line = j + 1;
-            _Etrans_temp->subtractor_line = i + 1;
-
-
-            if ((_mat->data[(_mat->column) * i + i]) != 0) {
-                _Etrans_temp->scale = (_mat->data[(_mat->column) * i + j]) / (_mat->data[(_mat->column) * i + i]);;
-            } else {
-                _Etrans_temp->scale = 0;
-                for (k = i + 1; k < _mat->row; k++) {
-                    flag = 1;//无可替代行
-                    if ((_mat->data[(_mat->column) * k + i]) != 0) {
-                        _Etrans_temp->minuend_line = -(i + 1);
-                        _Etrans_temp->subtractor_line = -(k + 1);
-                        flag = 2;//表示能够替换行
-                        break;
-                    }
-                }
-                if (flag == 1) {
-                    break;
-                }
-            }
-
-            _Etrans_temp->forward_E_trans = NULL;
-            _Etrans_temp->next_E_trans = NULL;
-            if (_Etrans_temp_head == NULL) {
-                _Etrans_temp_head = _Etrans_temp;
-                _Etrans_temp->forward_E_trans = NULL;
-            } else {
-                _Etrans_temp->forward_E_trans = _Etrans_temp_last;
-            }
-            if ((i + 1) == _mat->column) {
-                _Etrans_temp->next_E_trans = NULL;
-            } else {
-                if (_Etrans_temp_last != NULL) {
-                    _Etrans_temp_last->next_E_trans = _Etrans_temp;
-                }
-            }
-            M_E_trans(_mat, _Etrans_temp, _COLUMN_);
-            //M_print(_mat); //显示具体矩阵
-            _Etrans_temp_last = _Etrans_temp;
-            if (flag == 2) {
-                i = i - 1;
-                break;
-            }
-        }
-    }
-    M_inv_struct *_Lowtri = (M_inv_struct *) malloc(sizeof(M_inv_struct));
-    _Lowtri->_matrix = _mat;
-    _Lowtri->_Etrans_head = _Etrans_temp_last;
-    return _Lowtri;
-}
-/*M_Inv for Dia_matrix*/
-Matrix *M_Dia_Inv(Matrix *_mat_source) {
-    Matrix *_mat_inv = NULL;
-    if (_mat_source->row != _mat_source->column) {
-        // printf(M_Dia_Inv_002);
-        // system("pause");
-    } else {
-        _mat_inv = Matrix_copy(_mat_source);
-        MATRIX_TYPE *data = _mat_inv->data;
-        int i, order = _mat_source->column;
-        for (i = 0; i < order; i++) {
-            if((data)[i * (order + 1)] == 0){ // 不可逆
-                 printf(M_Dia_Inv_023);
-                // system("pause");
-                (data)[i * (order + 1)] = 1.0 / (data[i * (order + 1)]);
-                //(data)[i * (order + 1)]  = 0.0;
-            }else{
-                (data)[i * (order + 1)] = 1.0 / (data[i * (order + 1)]);
-            }
-        }
-    }
-    return _mat_inv;
-}
-/*Inverse_Element_trans_to_Matrix*/
-Matrix *Etrans_4_Inverse(Matrix *_mat_result, Etrans_struct *_Etrans_, int line_setting) {
-    Etrans_struct *temp_Etrans = _Etrans_, *temp_Etrans_pre = _Etrans_;
-    int temp_num = 0;
-    // 此处方案感谢 @1u2e, github.com/Amoiensis/Matrix_hub/issues/4
-    while (temp_Etrans != NULL) {
-        temp_num = temp_Etrans->minuend_line;
-        temp_Etrans->minuend_line = temp_Etrans->subtractor_line;
-        temp_Etrans->subtractor_line = temp_num;
-        M_E_trans(_mat_result, temp_Etrans, line_setting);
-        // 此处修改方案感谢 @1u2e, github.com/Amoiensis/Matrix_hub/issues/4
-        temp_Etrans = temp_Etrans->forward_E_trans;
-        free(temp_Etrans_pre);
-        temp_Etrans_pre = temp_Etrans;
-    }
-    return _mat_result;
-}
-/*Element teransfor Matrix*/
-/*lin3_sstting 设置是行初等变换还是列初等变换*/
-int M_E_trans(Matrix *_mat, Etrans_struct *_Etrans_, int line_setting) {
-    /*lin3_sstting 设置是行初等变换还是列初等变换*/
-    int line_num, i;
-    if (line_setting == _ROW_) {
-        /*行初等变换*/
-        line_num = _mat->column;
-        if (_Etrans_->scale) {
-            for (i = 0; i < line_num; i++) {
-                _mat->data[(_Etrans_->minuend_line - 1) * (_mat->column) + i] -=
-                        (_Etrans_->scale) * (_mat->data[(_Etrans_->subtractor_line - 1) * (_mat->column) + i]);
-
-            }
-        } else {
-            if ((_Etrans_->minuend_line < 0) && (_Etrans_->subtractor_line < 0)) {/*交换*/
-                M_Swap(_mat, -(_Etrans_->minuend_line), -(_Etrans_->subtractor_line), line_setting);
-            }
-        }
-    } else {
-        /*列初等变换*/
-        line_num = _mat->row;
-        if (_Etrans_->scale) {
-            for (i = 0; i < line_num; i++) {
-                _mat->data[(_Etrans_->minuend_line - 1) + (_mat->column) * i] -=
-                        (_Etrans_->scale) * (_mat->data[(_Etrans_->subtractor_line - 1) + (_mat->column) * i]);
-            }
-        } else {
-            if ((_Etrans_->minuend_line < 0) && (_Etrans_->subtractor_line < 0)) {/*交换*/
-                M_Swap(_mat, -(_Etrans_->minuend_line), -(_Etrans_->subtractor_line), line_setting);
-            }
-        }
-    }
-    return 0;
-}
-/*Swap Line*/
-int M_Swap(Matrix *_mat, int _line_1, int _line_2, int line_setting) {/*Swap Line
-	交换指定行和列*/
-    _line_1 = _line_1 - 1;
-    _line_2 = _line_2 - 1;
-    int i;
-    MATRIX_TYPE temp;
-    if (line_setting == _ROW_) {
-        if ((_line_1 < _mat->row) && (_line_2 < _mat->row)) {
-            for (i = 0; i < (_mat->column); i++) {
-                temp = _mat->data[_line_1 * (_mat->column) + i];
-                _mat->data[_line_1 * (_mat->column) + i] = _mat->data[_line_2 * (_mat->column) + i];
-                _mat->data[_line_2 * (_mat->column) + i] = temp;
-            }
-        } else {
-            printf(M_swap_004);
-            system("pause");
-        }
-    } else {
-        if ((_line_1 < _mat->column) && (_line_2 < _mat->column)) {
-            for (i = 0; i < (_mat->row); i++) {
-                temp = _mat->data[_line_1 + (_mat->column) * i];
-                _mat->data[_line_1 + (_mat->column) * i] = _mat->data[_line_2 + (_mat->column) * i];
-                _mat->data[_line_2 + (_mat->column) * i] = temp;
-            }
-        } else {
-            printf(M_swap_004);
-            system("pause");
-        }
-    }
-    return 0;
+    return _mat;
 }
 /*Matrix Multiply*/
 Matrix *M_mul(Matrix *_mat_left, Matrix *_mat_right) {
@@ -501,7 +299,7 @@ Matrix *M_mul(Matrix *_mat_left, Matrix *_mat_right) {
         int mid = _mat_left->column;
         int column = _mat_right->column;
         int i, j, k;
-        MATRIX_TYPE *_data = (MATRIX_TYPE *) malloc((row * column) * sizeof(MATRIX_TYPE));
+        MATRIX_TYPE **_data = GetMemory(row,column);
         MATRIX_TYPE temp = 0;
         /*Ergodic*/
         for (i = 0; i < row; i++) {
@@ -509,9 +307,9 @@ Matrix *M_mul(Matrix *_mat_left, Matrix *_mat_right) {
                 /*Caculate Element*/
                 temp = 0;
                 for (k = 0; k < mid; k++) {
-                    temp += (_mat_left->data[i * mid + k]) * (_mat_right->data[k * column + j]);
+                    temp += (_mat_left->data[i][k]) * (_mat_right->data[k][j]);
                 }
-                _data[i * column + j] = temp;
+                _data[i][j] = temp;
             }
         }
         _mat_result->row = row;
@@ -521,32 +319,115 @@ Matrix *M_mul(Matrix *_mat_left, Matrix *_mat_right) {
     //(_DETAILED_>=3)?printf("\tMatrix_%x\n", _mat_result):0;
     return _mat_result;
 }
-/*Transpose*/
-Matrix *M_T(Matrix *_mat_source) {
-    Matrix *_mat = (Matrix *) malloc(sizeof(Matrix));
-    _mat->column = _mat_source->row;
-    _mat->row = _mat_source->column;
-    MATRIX_TYPE *data = (MATRIX_TYPE *) malloc(sizeof(MATRIX_TYPE) * (_mat->column) * (_mat->row));
-    _mat->data = data;
-    int i, j;
-    for (i = 0; i < (_mat->row); i++) {
-        for (j = 0; j < _mat->column; j++) {
-            data[i * (_mat->column) + j] = _mat_source->data[j * (_mat_source->column) + i];
+/*Matrix inverse*/
+Matrix *M_Inverse(Matrix *_mat){
+    MATRIX_TYPE **TempA = _mat->data;
+    Matrix *_mat_result = (Matrix*)malloc(sizeof(Matrix));
+    MATRIX_TYPE **B = GetMemory(_mat->row,_mat->column);
+    for(int i = 0; i < _mat->row; i++){
+        for(int j = 0; j < _mat->column; j++){
+            B[i][j] = 0.0;
         }
     }
-    return _mat;
-}
+	int c,i,j,m = _mat->row;
+	double temp;
+	double **A;
 
-Matrix *M_limit(Matrix *_mat){
-    int row = _mat -> row;
-    int col = _mat -> column;
-    for(int i = 0; i < row; i++){
-        for(int j = 0; j < col; j++){
-                int location = i * col + j;
-                MATRIX_TYPE b = ((int)(_mat->data[location] * Caculate_limit + 0.5)) / 1000000.00;
-                _mat->data[location] = b;
-            }
-        }
-    return _mat;
-}
+	/* Copying the input matrix TempA into matrix A */
+	A = (double**)malloc(m*sizeof(double));
+	for(i=0;i<m;i++)
+	{
+		A[i] = (double*)malloc(m*sizeof(double));
+	}
 
+	for(i=0;i<m;i++)
+	{
+		for(j=0;j<m;j++)
+		{
+			A[i][j] = TempA[i][j];
+		}
+	}
+
+	/* Creating the identity matrix B */
+	/* Memory for Matrix B should already be allocated and initialized to 0 */
+	for(i=0;i<m;i++)
+	{
+			B[i][i] = 1;
+	} 
+
+	/*** Performing Gaussian elimination on A ***/
+
+	for(c=0;c<m;c++)
+	{/* loop over all columns of A */
+
+		/*
+		If diagnol element of column c is 0, then interchange row c with any other row
+		so that diagnol element of column c is non-zero.
+		*/
+		if(A[c][c] == 0)
+		{
+			for(i=0;i<m;i++)
+			{
+				if(A[i][c] != 0)
+				{
+					/** Interchange row i and row c **/
+					for(j=0;j<m;j++)
+					{
+						temp = A[i][j];
+						A[i][j] = A[c][j];
+						A[c][j] = temp;
+						/* Do the same operation for B */
+						temp = B[i][j];
+						B[i][j] = B[c][j];
+						B[c][j] = temp;
+					}
+					break;
+				}
+			}
+		}
+
+		/*
+		Making the diagnol element of column c, A[c][c] 1 by dividing
+		all the elements of row c, i.e. A[c][0 1 ... m-1] by A[c][c].
+		*/
+		if(A[c][c] != 1)
+		{
+			temp = A[c][c];
+			for(j=0;j<m;j++)
+			{
+				A[c][j] = A[c][j]/temp;
+				/* Do the same operation on the matrix B */
+				B[c][j] = B[c][j]/temp;
+			}
+		}
+
+		for(i=0;i<m;i++)
+		{/* loop over all rows of A */
+
+			/*
+			Making all elements of column c as zero, except for the diagnol element,
+			which is 1 at this point.
+			*/
+			if(i!=c)
+			{
+				temp = A[i][c];
+				for(j=0;j<m;j++)
+				{
+					A[i][j] = A[i][j] - temp*A[c][j];
+					B[i][j] = B[i][j] - temp*B[c][j];
+				}
+			}
+		}/* loop over all rows of A */
+
+	}/* loop over all columns of A */
+	
+	for(i=0;i<m;i++)
+	{
+		free(A[i]);
+	}
+	free(A);
+    _mat_result->row = _mat->row;
+    _mat_result->column = _mat->column;
+    _mat_result->data = B;
+    return _mat_result;
+}
