@@ -89,7 +89,7 @@ int main() {
             M_print(fir_taps1,"fir_taps1");
             Matrix *gpr_coeff = return_back[1];
             M_print(gpr_coeff,"gpr_coeff");
-            Write_fir_gpr(fir_taps1,gpr_coeff);
+            //Write_fir_gpr(fir_taps1,gpr_coeff);
             
 
             

@@ -22,3 +22,13 @@ void Write_fir_gpr(Matrix *fir_taps1, Matrix *gpr_coeff){
     }
     fclose(fp);
 }
+#if 0
+void Write_matrix(Matrix *_mat, const char *str){
+    FILE *fp;
+    unsigned long length = strlen(str);
+    char *buff = (char *)malloc(sizeof(char) * (int)(length + 1));
+    strcpy(buff,str);
+    fp = fopen() 
+    free(buff);
+}
+#endif
