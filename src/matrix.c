@@ -431,3 +431,56 @@ Matrix *M_Inverse(Matrix *_mat){
     _mat_result->data = B;
     return _mat_result;
 }
+
+/*Matrix Convolution*//*this is for the matrix only like 1*n or n*1*/
+Matrix *M_Conv(Matrix *_mat1, Matrix *_mat2){
+    int flag1,flag2,len1,len2,min,max;
+    if(_mat1->row > 1){
+        flag1 = 0;
+        len1 = _mat1->row;
+    } 
+    else{
+        flag1 = 1;
+        len1 = _mat1->column;
+    } 
+    if(_mat2->row > 1){
+        flag2 = 0;
+        len2 = _mat2->row;
+    } 
+    else{
+        flag2 = 1;
+        len2 = _mat2->column;
+    }
+    int len = len1+len2-1;
+    Matrix *_mat_result = NULL;
+    _mat_result = (Matrix*)malloc(sizeof(Matrix));
+    _mat_result->row = 1;
+    _mat_result->column = len;
+     _mat_result->data = GetMemory(_mat_result->row,_mat_result->column); 
+    for(int k=0;k<len;++k){
+        max = 0 > (k+1-len2)?0:(k+1-len2);
+        min = k<(len1-1)?k:(len1-1);
+        if(flag1&&flag2){
+            for(int i = max;i<=min;i++){
+                _mat_result->data[0][k] += _mat1->data[0][i] * _mat2->data[0][k-i]; 
+            }
+        }
+        else if(flag1 == 1 && flag2 == 0){
+            for(int i = max;i<=min;i++){
+                _mat_result->data[0][k] += _mat1->data[0][i] * _mat2->data[k-i][0]; 
+            }
+        }
+        else if(flag1 == 0 && flag2 == 1){
+            for(int i = max;i<=min;i++){
+                _mat_result->data[0][k] += _mat1->data[i][0] * _mat2->data[0][k-i]; 
+            }
+        }
+        else{
+            for(int i = max;i<=min;i++){
+                _mat_result->data[0][k] += _mat1->data[i][0] * _mat2->data[k-i][0]; 
+            }
+        }
+        
+    }
+    return _mat_result;
+}

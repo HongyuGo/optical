@@ -64,4 +64,6 @@ Matrix *M_mul(Matrix *_mat_left, Matrix *_mat_right);
 /*Transpose*/
 Matrix *M_T(Matrix *_mat_source); 
 Matrix *M_limit(Matrix *_mat);
+/*Matrix Convolution*/
+Matrix *M_Conv(Matrix *_mat1, Matrix *_mat2);
 #endif

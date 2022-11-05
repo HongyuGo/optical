@@ -1,4 +1,5 @@
 #include "main.h"
+#include "matrix.h"
 
 int main() {
     MATRIX_TYPE gpr_target[5] ={1, 2,2,2, 1};
@@ -82,18 +83,20 @@ int main() {
             //------------Equqlization and Detection of Original Signal------------------------
             // PR Equalizer-ML
             //M_print(ak,"ak");
-            //M_print(rk_normarlized,"rk_normarlized");
+            M_print(rk_normarlized,"rk_normarlized");
             Matrix **return_back = gen_firtaps_v2(ak,rk_normarlized,
                                     gpr_target,fir_length,constraint,method);
             Matrix *fir_taps1 = return_back[0];
             M_print(fir_taps1,"fir_taps1");
             Matrix *gpr_coeff = return_back[1];
-            M_print(gpr_coeff,"gpr_coeff");
+            //M_print(gpr_coeff,"gpr_coeff");
             //Write_fir_gpr(fir_taps1,gpr_coeff);
-            
+            Matrix *fk1 = M_Conv(rk_normarlized, fir_taps1);
+            M_print(fk1,"fk1");
 
             
             free(return_back);
+            M_free(fk1);
             M_free(fir_taps1);
             M_free(gpr_coeff);
             M_free(rk_normarlized);
