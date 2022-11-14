@@ -14,6 +14,7 @@
 #define edge_width (((fir_length)-1) / 2)
 #define sigma_jitter ((0.01) * (TL))
 #define KWinLen 1
+#define max_metric 1000000
 
 #define _END_ -1
 #define _HEAD_ 1
