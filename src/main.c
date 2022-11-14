@@ -47,8 +47,8 @@ int main() {
             //fclose(fp);
             //--------------------------------------------------------------------------
 
-            #define Test_len 40
-            MATRIX_TYPE test_data[Test_len] = {0,1,0,0,1,0,1,1,1,0,0,0,1,1,0,0,1,1,1,1,0,1,0,1,1,1,0,1,1,0,1,0,1,0,1,0,0,0,1,0};
+            #define Test_len 10
+            MATRIX_TYPE test_data[Test_len] = {1,0,1,1,1,1,0,0,1,0};
             // MATRIX_TYPE test_data[Test_len] = {0,1,0,0,1,0,1,1,1,0,0,0,1,0,1};
             Matrix *ChannelBits = Matrix_gen(1,Test_len,test_data);
             //M_print(ChannelBits,"CH");
@@ -62,7 +62,7 @@ int main() {
 
             Matrix *ak = M_full(codedwords,0,0,KWinLen,0,0);
             ak = M_numsub(M_nummul(ak,2.0),1.0);
-            //M_print(ak,"ak");
+            M_print(ak,"ak");
             Matrix *dk = M_Transition(ak);
             dk = M_nummul(dk,0.5);
             //M_print(dk,"dk");
@@ -83,16 +83,16 @@ int main() {
             //------------Equqlization and Detection of Original Signal------------------------
             // PR Equalizer-ML
             //M_print(ak,"ak");
-            M_print(rk_normarlized,"rk_normarlized");
+            //M_print(rk_normarlized,"rk_normarlized");
             Matrix **return_back = gen_firtaps_v2(ak,rk_normarlized,
                                     gpr_target,fir_length,constraint,method);
             Matrix *fir_taps1 = return_back[0];
-            M_print(fir_taps1,"fir_taps1");
+            //M_print(fir_taps1,"fir_taps1");
             Matrix *gpr_coeff = return_back[1];
             //M_print(gpr_coeff,"gpr_coeff");
             //Write_fir_gpr(fir_taps1,gpr_coeff);
             Matrix *fk1 = M_Conv(rk_normarlized, fir_taps1);
-            M_print(fk1,"fk1");
+            //M_print(fk1,"fk1");
 
             
             free(return_back);
