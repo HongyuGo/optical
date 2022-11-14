@@ -26,6 +26,21 @@ typedef struct _Elementary_Transformation {
     struct _Elementary_Transformation *next_E_trans;
 } Etrans_struct;
 
+/*trellis*/
+typedef struct{
+    int input;
+    MATRIX_TYPE output; 
+    //int cur;
+    int next;
+    //int counter; /*we can default that every state has two branch*/
+} Trellis_nst;
+typedef struct{
+    int input;
+    MATRIX_TYPE output;
+    //int next;
+    int pre;
+}Trellis_pst;
+
 MATRIX_TYPE** GetMemory(int row, int col);
 /* Generate Matrix Struct */
 Matrix* Matrix_gen(int row, int column, MATRIX_TYPE* data);
@@ -66,4 +81,6 @@ Matrix *M_T(Matrix *_mat_source);
 Matrix *M_limit(Matrix *_mat);
 /*Matrix Convolution*/
 Matrix *M_Conv(Matrix *_mat1, Matrix *_mat2);
+/*viterbi_mlse*/
+Matrix *viterbi_mlse(int gpr_length,Matrix *fk1, Matrix *gpr_coeff);
 #endif

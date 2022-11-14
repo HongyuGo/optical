@@ -3,7 +3,7 @@
 
 int main() {
     MATRIX_TYPE gpr_target[5] ={1, 2,2,2, 1};
-    //int gpr_length = sizeof(gpr_target)/sizeof(MATRIX_TYPE);
+    int gpr_length = sizeof(gpr_target)/sizeof(MATRIX_TYPE);
     int fir_length = 13;
     // int pr2_target[5] = {1,2,2,2,1};
     // int pr2_length = sizeof(pr2_target)/sizeof(int);
@@ -83,19 +83,22 @@ int main() {
             //------------Equqlization and Detection of Original Signal------------------------
             // PR Equalizer-ML
             //M_print(ak,"ak");
-            M_print(rk_normarlized,"rk_normarlized");
+            //M_print(rk_normarlized,"rk_normarlized");
             Matrix **return_back = gen_firtaps_v2(ak,rk_normarlized,
                                     gpr_target,fir_length,constraint,method);
             Matrix *fir_taps1 = return_back[0];
             M_print(fir_taps1,"fir_taps1");
             Matrix *gpr_coeff = return_back[1];
-            //M_print(gpr_coeff,"gpr_coeff");
+            M_print(gpr_coeff,"gpr_coeff");
             //Write_fir_gpr(fir_taps1,gpr_coeff);
             Matrix *fk1 = M_Conv(rk_normarlized, fir_taps1);
-            M_print(fk1,"fk1");
-
+            //M_print(fk1,"fk1");
+            Matrix *detected = viterbi_mlse(gpr_length,fk1,gpr_coeff);
+            M_print(detected, "detected");
+            
             
             free(return_back);
+            M_free(detected);
             M_free(fk1);
             M_free(fir_taps1);
             M_free(gpr_coeff);
