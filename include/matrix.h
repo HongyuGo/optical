@@ -35,10 +35,11 @@ typedef struct{
     //int counter; /*we can default that every state has two branch*/
 } Trellis_nst;
 typedef struct{
-    int input;
-    MATRIX_TYPE output;
+    int input[2];
+    MATRIX_TYPE output[2];
     //int next;
-    int pre;
+    int pre[2];
+    int counter;
 }Trellis_pst;
 
 MATRIX_TYPE** GetMemory(int row, int col);

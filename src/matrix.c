@@ -507,12 +507,14 @@ Matrix *viterbi_mlse(int gpr_len,Matrix *fk1, Matrix *gpr_coeff){
     Trellis_pst **trellis_pst = NULL;
     trellis_nst = (Trellis_nst **)malloc(sizeof(Trellis_nst*) * numOfStates * 2);
     trellis_pst = (Trellis_pst **)malloc(sizeof(Trellis_pst*) * numOfStates * 2);
+    /*initial trellis_nst*/
     for (int i = 0; i < numOfStates*2; ++i) {
-        trellis_nst[i] = (Trellis_nst*)malloc(sizeof(Trellis_nst));
-        trellis_pst[i] = (Trellis_pst*)malloc(sizeof(Trellis_pst));
+        trellis_nst[i] = (Trellis_nst*)malloc(sizeof(Trellis_nst));   
     }
-    for(int i=0;i< numOfStates * 2;++i){
-        trellis_pst[i]->pre = -1;/*this part is necessary and esential*/
+    /*initial trellis_pst*/
+    for(int i=0;i< numOfStates;++i){
+        trellis_pst[i] = (Trellis_pst*)malloc(sizeof(Trellis_pst));
+        trellis_pst[i]->counter = 0;
     }
     //printf("test:%d",(2*(0&1)-1));
     for (int s = 0; s < numOfStates; ++s) {
@@ -529,16 +531,13 @@ Matrix *viterbi_mlse(int gpr_len,Matrix *fk1, Matrix *gpr_coeff){
                 //printf("tmp:%d  ",tmp);
             }
             trellis_nst[cur]->next = ((s<<1|1)&((1<<stateSize)+b-3));/*update s*/
-            printf("nst - curstate:%d, input:%d, output:%lf, nextstate:%d\n",
-                          s, trellis_nst[cur]->input, trellis_nst[cur]->output,trellis_nst[cur]->next);
-            //trellis_nst[s]->cur = s;
-            int nextstate = trellis_nst[cur]->next + numOfStates * (b-1);
-            trellis_pst[nextstate]->input = trellis_nst[cur]->input;
-            trellis_pst[nextstate]->output = trellis_nst[cur]->output;
-            trellis_pst[nextstate]->pre = s;
-            //printf("[state:%d]->pre%d\n",nextstate,s);
-            printf("trellis.pst(%d,%d).prestate= %d\n",
-                          nextstate,b,s);
+            printf("nst - curstate:%d, input:%d, output:%lf, nextstate:%d\n",s, trellis_nst[cur]->input, trellis_nst[cur]->output,trellis_nst[cur]->next);
+            int nextstate = trellis_nst[cur]->next ;
+            trellis_pst[nextstate]->counter +=1;
+            trellis_pst[nextstate]->input[trellis_pst[nextstate]->counter-1] = trellis_nst[cur]->input;
+            trellis_pst[nextstate]->output[trellis_pst[nextstate]->counter-1] = trellis_nst[cur]->output;
+            trellis_pst[nextstate]->pre[trellis_pst[nextstate]->counter-1] = s;
+            printf("trellis.pst(%d,%d).prestate= %d\n",nextstate,trellis_pst[nextstate]->counter,s);
         }
     }
 
@@ -561,24 +560,19 @@ Matrix *viterbi_mlse(int gpr_len,Matrix *fk1, Matrix *gpr_coeff){
             mat_state_metric->data[i][j] = 1000;
         }
     }
-    mat_detected_output->data[0][0] = 0; /*assume that the initial state is 0*/
+    mat_state_metric->data[0][0] = 0; /*assume that the initial state is 0*/
     double *state_value = (double *)malloc(2*sizeof(double));
+    double branch_metric;
     for(int i = 1;i < depth;++i){
         for(int j=0;j < numOfStates;++j){
             
             for(int b=1;b<=2;++b){
-                /*pass impossible situation like the 0's pre via branch2*/
-                if(trellis_pst[j + (b-1)*numOfStates]->pre == -1){
-                    state_value[b-1] = max_metric;
-                    //printf("nextstate%d,branch%d skip\n ",j,b-1);
-                    continue; 
-                } 
-                int out = trellis_pst[j + (b-1)*numOfStates]->output;
-                int f = mat_detected_output->data[0][i-1];
-                double branch_metric = pow((f-out),2);
-                int c = trellis_pst[j+(b-1)*numOfStates]->pre;
+                double out = trellis_pst[j]->output[b-1];
+                double f = fk1->data[0][i-1];
+                branch_metric = (f-out)*(f-out);
+                int c = trellis_pst[j]->pre[b-1];
                 c = c*1;
-                state_value[b-1] = mat_state_metric->data[trellis_pst[j+(b-1)*numOfStates]->pre][i-1] + branch_metric;
+                state_value[b-1] = mat_state_metric->data[trellis_pst[j]->pre[b-1]][i-1] + branch_metric;
             }
             //printf("v0:%lf,v1:%lf->",state_value[0],state_value[1]);
             if(state_value[0]>state_value[1]){
@@ -590,9 +584,6 @@ Matrix *viterbi_mlse(int gpr_len,Matrix *fk1, Matrix *gpr_coeff){
                 survivor_path[j][i-1] = 1;
             } 
             else{
-                if(state_value[0]==max_metric/10){
-                    printf("error\n");
-                };
                 mat_state_metric->data[j][i] = state_value[0];
                 int rand_num = rand();
                 if(rand_num%2 == 1) survivor_path[j][i-1] = 1;//for branch 1
@@ -600,19 +591,23 @@ Matrix *viterbi_mlse(int gpr_len,Matrix *fk1, Matrix *gpr_coeff){
             }
             //printf("j%d,survivor_path%d ",j,survivor_path[j][i-1]);
             printf("%d  ",survivor_path[j][i-1]);
+            //printf("%.4lf  ",mat_state_metric->data[j][i-1]);
         }
         printf("\n");
     }
     int state = 0;
     for(int i = depth-1;i>=1;--i){
-        mat_detected_output->data[0][i] = trellis_pst[state + numOfStates*(survivor_path[state][i-1] - 1)]->input;
-        printf("state%d,branch%d\n",state,survivor_path[state][i-1]);
-        state = trellis_pst[state][survivor_path[state][i-1]].pre;
+        mat_detected_output->data[0][i-1] = trellis_pst[state]->input[survivor_path[state][i-1] - 1];
+        printf("state:%d, survivor_path:%d\n",state, survivor_path[state][i-1]);
+        //printf("%.4lf",mat_detected_output->data[0][i-1]);
+        state = trellis_pst[state]->pre[-1+survivor_path[state][i-1]];
     }
     /*free the space of avoid Memory leak*/
     for (int i = 0; i < numOfStates * 2; ++i) {
-        free(trellis_nst[i]);
-        free(trellis_pst[i]);
+        free(trellis_nst[i]);  
+    }
+    for (int i = 0; i < numOfStates ; ++i) {
+        free(trellis_pst[i]);   
     }
     for(int i=0;i<numOfStates;++i){
         free(survivor_path[i]);

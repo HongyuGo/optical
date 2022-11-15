@@ -83,7 +83,7 @@ int main() {
             //------------Equqlization and Detection of Original Signal------------------------
             // PR Equalizer-ML
             //M_print(ak,"ak");
-            //M_print(rk_normarlized,"rk_normarlized");
+            M_print(rk_normarlized,"rk_normarlized");
             Matrix **return_back = gen_firtaps_v2(ak,rk_normarlized,
                                     gpr_target,fir_length,constraint,method);
             Matrix *fir_taps1 = return_back[0];
@@ -92,7 +92,7 @@ int main() {
             M_print(gpr_coeff,"gpr_coeff");
             //Write_fir_gpr(fir_taps1,gpr_coeff);
             Matrix *fk1 = M_Conv(rk_normarlized, fir_taps1);
-            //M_print(fk1,"fk1");
+            M_print(fk1,"fk1");
             Matrix *detected = viterbi_mlse(gpr_length,fk1,gpr_coeff);
             M_print(detected, "detected");
             
