@@ -82,6 +82,6 @@ Matrix *M_T(Matrix *_mat_source);
 Matrix *M_limit(Matrix *_mat);
 /*Matrix Convolution*/
 Matrix *M_Conv(Matrix *_mat1, Matrix *_mat2);
-/*viterbi_mlse*/
-Matrix *viterbi_mlse(int gpr_length,Matrix *fk1, Matrix *gpr_coeff);
+/*compare the diff of two Matrix*/
+int M_Compare(Matrix *mat1,Matrix *mat2);
 #endif

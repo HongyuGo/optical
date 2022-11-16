@@ -95,6 +95,9 @@ int main() {
             M_print(fk1,"fk1");
             Matrix *detected = viterbi_mlse(gpr_length,fk1,gpr_coeff);
             M_print(detected, "detected");
+            Matrix *uhat = M_Cut(detected,1,1,8,8+codedlen-1);
+            int cur_err = M_Compare(codedwords, uhat);
+            printf("err:%d\n",cur_err);
             
             
             free(return_back);

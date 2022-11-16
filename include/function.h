@@ -12,4 +12,6 @@ Matrix* cross_corr(Matrix *x, Matrix *y, int K, int L);
 MATRIX_TYPE Caculate_lagrange(Matrix * R_matrix, Matrix* A_matrix, Matrix *T_matrix, Matrix *I_matrix);
 Matrix *Caculate_gpr_coeff(Matrix *R_matrix, Matrix *A_matrix, Matrix *T_matrix, Matrix *I_matrix, MATRIX_TYPE lagrange);
 Matrix *Caculate_fir_coeff(Matrix *R_matrix, Matrix *T_matrix, Matrix *gpr_coeff);
+/*viterbi_mlse*/
+Matrix *viterbi_mlse(int gpr_len,Matrix *fk1, Matrix *gpr_coeff);
 #endif
