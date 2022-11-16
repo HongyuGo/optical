@@ -87,7 +87,9 @@ int main() {
             Matrix* fk_filter=rk_normarlized;
             Matrix* temp_output = M_Conv(ak, gpr_target);
             Matrix* ideal_output = M_Cut(temp_output,1,1,2,temp_output->column-3);
-            Matrix* un = M_T(M_Cut(fk_filter,1,1,7,ideal_output->column+6));
+            Matrix* un = M_Cut(fk_filter,1,1,7,ideal_output->column+6);
+            Matrix* un_T=M_T(un);
+            Matrix* un_mul=M_mul(un, un_T);
             fe = max(eig(un*un.'));
             mu = 2*(1/fe);  
             Matrix* fir_taps_lms=
