@@ -13,7 +13,7 @@ double readback(double t, double jitter, Matrix* a, double SS, double TT, double
     double rs = 0;
     double tmp = 0;
     for (int i = 0; i < len; i++) {
-        tmp = a->data[0][i] * h_response(t - (i + 1) * TT + jitter, TT, TLL, SS);
+        tmp = a->data[0][i] * h_response(t - (i + 1) * TLL + jitter, TT, TLL, SS);
         rs = rs + tmp;
     }
     return rs;

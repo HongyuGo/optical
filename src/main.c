@@ -64,7 +64,7 @@ int main() {
             Matrix* rk = M_Zeros(1, CodedBitsLength + 1 + KWinLen);
             for (int i = 0; i < CodedBitsLength + 1 + KWinLen; i++) {
                 double jitter = sigma_jitter;
-                double stdpos_d = (i + 1) * T;
+                double stdpos_d = (i + 1) * TL;
                 rk->data[0][i] = readback(stdpos_d, jitter, ak, S, T, TL);
             }
             //-------------Normalization----------------
@@ -90,6 +90,7 @@ int main() {
             Matrix* un = M_Cut(fk_filter,1,1,7,ideal_output->column+6);
             Matrix* un_T=M_T(un);
             Matrix* un_mul=M_mul(un, un_T);
+
             fe = max(eig(un*un.'));
             mu = 2*(1/fe);  
             Matrix* fir_taps_lms=
