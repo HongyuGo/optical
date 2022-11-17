@@ -23,7 +23,7 @@
 #define _COLUMN_ 0
 #define MATRIX_TYPE double
 #define TRANS_TYPE double
-#define PRECISION "%.5lf  "
+#define PRECISION "%.6lf "
 
 #define M_mul_001                                                              \
     "@ERROR: Matrix_Dimensions "                                               \

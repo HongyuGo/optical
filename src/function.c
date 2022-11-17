@@ -194,3 +194,171 @@ Matrix *Caculate_fir_coeff(Matrix *R_matrix, Matrix *T_matrix,
     M_free(TR);
     return TRgpr;
 }
+
+int compare(int _dataget_col, int _array_col,MATRIX_TYPE (*dataget)[_dataget_col],MATRIX_TYPE (*array)[_array_col],int row){
+    int i;
+    for(i = 1; i <= 4; i++){
+        if(dataget[0][0] == array[row - 1][i * 2 -2] && dataget[0][1] == array[row - 1][i * 2 - 1]){
+            return i;
+        }
+    }
+    return -1;
+}
+
+void encode_17pp(int _src_col, int _des_col, MATRIX_TYPE (*_src)[_src_col], MATRIX_TYPE (*_des)[_des_col]){
+    static MATRIX_TYPE code1[4] = {0,0,0,2};
+    static MATRIX_TYPE code2[4] = {0,0,1,2};
+    static MATRIX_TYPE code3[4] = {0,1,0,2};
+    static MATRIX_TYPE code4[7] = {0,1,0,1,0,0,2};
+    static MATRIX_TYPE code5[7] = {0,1,0,0,0,0,2};
+    static MATRIX_TYPE code6[7] = {0,0,0,1,0,0,2};
+    static MATRIX_TYPE code7[10] = {0,0,0,1,0,0,1,0,0,2};
+    static MATRIX_TYPE code8[10] = {0,0,0,1,0,0,0,0,0,2};
+    static MATRIX_TYPE code9[10] = {0,1,0,1,0,0,1,0,0,2};
+    static MATRIX_TYPE code10[10] = {0,1,0,1,0,0,0,0,0,2};
+    static MATRIX_TYPE code11[10] = {0,0,1,0,0,0,0,0,0,2};
+    static MATRIX_TYPE code12[13] = {0,0,0,1,0,0,1,0,0,1,0,0,2};
+    static MATRIX_TYPE code13[13] = {0,1,0,1,0,0,1,0,0,1,0,0,2};
+    static MATRIX_TYPE code14[4] ={1,0,1,2};
+
+    MATRIX_TYPE *out_array[15];
+    out_array[1] = code1;
+    out_array[2] = code2;
+    out_array[3] = code3;
+    out_array[4] = code4;
+    out_array[5] = code5;
+    out_array[6] = code6;
+    out_array[7] = code7;
+    out_array[8] = code8;
+    out_array[9] = code9;
+    out_array[10] = code10;
+    out_array[11] = code11;
+    out_array[12] = code12;
+    out_array[13] = code13;
+    out_array[14] = code14;
+
+
+    int r = 0;
+    int NRZIUserLen = _src_col;
+    int NRZIUserLen_keep = _src_col;
+    int cur = 0;
+    MATRIX_TYPE array[4][8] = {{0,0,1,1,1,0,0,1},
+                               {0,0,1,1,1,0,0,1},
+                               {0,0,1,1,1,0,0,1},
+                               {0,0,1,1,1,0,0,1}};
+    int out_index = 0;
+    int last_channel_bit = 0;
+    int vssf = 0;
+    int special_cur = 0;
+    int special_index = 0;
+    int flag = 1;
+    int index_new_turn = 0;
+    int row = 1;
+    int flag_terminate = 0;
+    MATRIX_TYPE dataget[1][2];
+    int index = 0;
+    int des_cur = 0;
+    int very_special_state_index = 0;
+    while(NRZIUserLen > 0){
+        flag = 1;
+        index_new_turn = 0;
+        row = 1;
+        flag_terminate = 0;
+        while(r < 3 && flag == 1 && flag_terminate == 0){
+            r = r + 1;
+            dataget[0][0] = _src[0][cur];
+            dataget[0][1] = _src[0][cur + 1];
+            cur = cur + 2;
+            NRZIUserLen = NRZIUserLen - 2;
+            index = compare(2,8,dataget,array,row);
+            switch(index){
+                case 1:
+                    vssf = vssf != 4? 0 : 4;
+                    index_new_turn = index_new_turn + 3;
+                    if(r == 3){
+                        out_index = 10;
+                        if(NRZIUserLen_keep - cur >= 2){
+                            dataget[0][0] = _src[0][cur];
+                            dataget[0][1] = _src[0][cur + 1];
+                            index = compare(2,8,dataget,array,4);
+                            if(index == 1){
+                                out_index = 13;
+                                cur = cur + 2;
+                                NRZIUserLen = NRZIUserLen - 2;
+                            }
+                        }
+                    }
+                    row = row + 1;
+                    break;
+
+                case 2: //11
+                    out_index  = 1 + index_new_turn;
+                    if(vssf == 0 || vssf == 2){
+                        vssf = vssf + 1;
+                    }else{
+                        if(vssf != 4){
+                            vssf = 0;
+                        }
+                    }
+                    if(r == 1 && last_channel_bit == 0){
+                        out_index = 14;
+                    }
+                    flag = 0;
+                    break;
+
+                case 3: //10
+                    out_index = 2 + index_new_turn;
+                    vssf = vssf != 4? 0: 4;
+                    if(r == 3 && NRZIUserLen_keep - cur  >= 2){
+                        special_cur = cur;
+                        dataget[0][0] = _src[0][special_cur];
+                        dataget[0][1] = _src[0][special_cur + 1];
+                        special_index = compare(2,8,dataget,array,4);
+                        if(special_index == 1){
+                            out_index = 12;
+                            cur = special_cur + 2;
+                            NRZIUserLen = NRZIUserLen - 2;
+                        }
+                    }
+                    flag = 0;
+                    break;
+                
+                case 4: //01
+                    out_index = 3 + index_new_turn;
+                    if(vssf == 1){
+                        vssf = vssf + 1;
+                    }else{
+                        if(vssf != 4){
+                            vssf = 0;
+                        }
+                    }
+                    flag = 0;
+                    break;
+            }
+
+
+        }
+        MATRIX_TYPE * value_cur = out_array[out_index];
+        while(*value_cur != 2){
+            _des[0][des_cur++] = *value_cur;
+            value_cur++;
+        }
+        if(vssf == 4){
+            if(out_array[out_index][0] == 0 && out_array[out_index][1] == 1 && out_array[out_index][2] == 0){
+                MATRIX_TYPE *value_cur2 = out_array[11];
+                while(*value_cur2 != 2){
+                    _des[0][very_special_state_index++] = *value_cur2;
+                    value_cur2++;
+                }
+            }   
+            vssf = 0;
+        }
+        if(vssf == 3){
+            very_special_state_index = des_cur - 9;
+            vssf = 4;
+        }
+        last_channel_bit = _des[0][des_cur - 1];
+        out_index = 0;
+        r = 0;
+    } 
+}

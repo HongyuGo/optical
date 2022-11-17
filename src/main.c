@@ -2,11 +2,11 @@
 #include "matrix.h"
 
 int main() {
-    MATRIX_TYPE gpr_target[5] = {1, 2, 2, 2, 1};
-    int gpr_length = sizeof(gpr_target) / sizeof(MATRIX_TYPE);
-    int fir_length = 13;
-    // int pr2_target[5] = {1,2,2,2,1};
-    // int pr2_length = sizeof(pr2_target)/sizeof(int);
+    // MATRIX_TYPE gpr_target[5] = {1, 2, 2, 2, 1};
+    // int gpr_length = sizeof(gpr_target) / sizeof(MATRIX_TYPE);
+    // int fir_length = 13;
+    //  int pr2_target[5] = {1,2,2,2,1};
+    //  int pr2_length = sizeof(pr2_target)/sizeof(int);
     int SNR_len = sizeof(SNR) / sizeof(int);
     Matrix *BER1 = M_Zeros(SNR_len, 1);
     Matrix *BER2 = M_Zeros(SNR_len, 1);
@@ -45,8 +45,9 @@ int main() {
             // fclose(fp);
             //--------------------------------------------------------------------------
 
-#define Test_len 10
-            MATRIX_TYPE test_data[Test_len] = {1, 0, 1, 1, 1, 1, 0, 0, 1, 0};
+#define Test_len 20
+            MATRIX_TYPE test_data[Test_len] = {1, 0, 1, 1, 1, 1, 0, 0, 1, 0,
+                                               1, 0, 0, 1, 0, 1, 0, 0, 1, 1};
             // MATRIX_TYPE test_data[Test_len] =
             // {0,1,0,0,1,0,1,1,1,0,0,0,1,0,1};
             Matrix *ChannelBits = Matrix_gen(1, Test_len, test_data);
@@ -61,16 +62,19 @@ int main() {
 
             Matrix *ak = M_full(codedwords, 0, 0, KWinLen, 0, 0);
             ak = M_numsub(M_nummul(ak, 2.0), 1.0);
-            M_print(ak, "ak");
+            //M_print(ak, "ak");
             Matrix *dk = M_Transition(ak);
             dk = M_nummul(dk, 0.5);
+
             // M_print(dk,"dk");
             Matrix *rk = M_Zeros(1, CodedBitsLength + 1 + KWinLen);
+            // M_print(rk,"rk");
             for (int i = 0; i < CodedBitsLength + 1 + KWinLen; i++) {
                 double jitter = sigma_jitter;
                 double stdpos_d = (i + 1) * T;
                 rk->data[0][i] = readback(stdpos_d, jitter, dk, S, T, TL);
             }
+            //M_print(rk, "rk");
             //-------------Normalization----------------
             MATRIX_TYPE min_rk = M_Min_value(*rk->data, rk->column);
             MATRIX_TYPE max_rk = M_Max_value(*rk->data, rk->column);
@@ -80,11 +84,21 @@ int main() {
                     1.0;
             }
             Matrix *rk_normarlized = Matrix_copy(rk);
-            //------------Equqlization and Detection of Original
-            // Signal------------------------
-            // PR Equalizer-ML
-            // M_print(ak,"ak");
-            // M_print(rk_normarlized,"rk_normarlized");
+
+            #define LEN 5
+            MATRIX_TYPE src[1][LEN * 2] = {{1,1,0,1,0,1,1,0,1,1}};
+            MATRIX_TYPE des[1][LEN * 3];
+            encode_17pp(LEN * 2, LEN * 3, src,des);
+            for(int i = 0; i < LEN * 3; i++){
+                printf("%.3lf ",des[0][i]);
+            }
+            printf("\n");
+//------------Equqlization and Detection of Original
+// Signal------------------------
+// PR Equalizer-ML
+// M_print(ak,"ak");
+// M_print(rk_normarlized,"rk_normarlized");
+#if 0
             Matrix **return_back = gen_firtaps_v2(
                 ak, rk_normarlized, gpr_target, fir_length, constraint, method);
             Matrix *fir_taps1 = return_back[0];
@@ -102,6 +116,7 @@ int main() {
             M_free(fk1);
             M_free(fir_taps1);
             M_free(gpr_coeff);
+#endif
             M_free(rk_normarlized);
             M_free(rk);
             M_free(dk);
