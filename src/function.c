@@ -343,6 +343,9 @@ void encode_17pp(int _src_col, int _des_col, MATRIX_TYPE (*_src)[_src_col], MATR
             _des[0][des_cur++] = *value_cur;
             value_cur++;
         }
+        if(out_index != 1 && out_index != 3 && out_index != 14){
+            vssf = 0;
+        }
         if(vssf == 4){
             if(out_array[out_index][0] == 0 && out_array[out_index][1] == 1 && out_array[out_index][2] == 0){
                 MATRIX_TYPE *value_cur2 = out_array[11];

@@ -85,9 +85,15 @@ int main() {
             }
             Matrix *rk_normarlized = Matrix_copy(rk);
 
-            #define LEN 5
-            MATRIX_TYPE src[1][LEN * 2] = {{1,1,0,1,0,1,1,0,1,1}};
+            #define LEN 600
+            srand(6);
+            MATRIX_TYPE src[1][LEN * 2] = {};
             MATRIX_TYPE des[1][LEN * 3];
+            for(int i = 0; i < LEN * 2; i++){
+                src[0][i] = rand()%2;
+                printf("%.3lf ",src[0][i]);
+            }
+            printf("\n\n");
             encode_17pp(LEN * 2, LEN * 3, src,des);
             for(int i = 0; i < LEN * 3; i++){
                 printf("%.3lf ",des[0][i]);
