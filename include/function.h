@@ -20,4 +20,6 @@ Matrix *Caculate_fir_coeff(Matrix *R_matrix, Matrix *T_matrix,
 Matrix *viterbi_mlse(int gpr_len, Matrix *fk1, Matrix *gpr_coeff);
 MATRIX_TYPE Xor(MATRIX_TYPE a, MATRIX_TYPE b);
 Matrix *LMS(Matrix *x, Matrix *d, MATRIX_TYPE delta, int N);
+void encode_17pp(int _src_col, int _des_col, MATRIX_TYPE (*_src)[_src_col],
+                 MATRIX_TYPE (*_des)[_des_col]);
 #endif

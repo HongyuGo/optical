@@ -1,11 +1,6 @@
 #include "commom.h"
-<<<<<<< HEAD
 void Write_fir_gpr(Matrix *fir_taps1, Matrix *gpr_coeff) {
     FILE *fp;
-=======
-void Write_fir_gpr(Matrix* fir_taps1, Matrix* gpr_coeff) {
-    FILE* fp;
->>>>>>> main
     int i, j;
     const char path[] = {"./output/output_fir_gpr.txt"};
     const char fir_taps1_str[] = {"fir_taps1\n"};
