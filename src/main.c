@@ -85,8 +85,8 @@ int main() {
             }
             Matrix *rk_normarlized = Matrix_copy(rk);
 
-            #define LEN 4096
-            srand(6);
+            #define LEN 152
+            srand(8);
             MATRIX_TYPE src[1][LEN * 2] = {};
             MATRIX_TYPE des[1][LEN * 3];
             for(int i = 0; i < LEN * 2; i++){

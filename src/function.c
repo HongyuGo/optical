@@ -195,10 +195,10 @@ Matrix *Caculate_fir_coeff(Matrix *R_matrix, Matrix *T_matrix,
     return TRgpr;
 }
 
-int compare(int _dataget_col, int _array_col,MATRIX_TYPE (*dataget)[_dataget_col],MATRIX_TYPE (*array)[_array_col],int row){
+int compare(int _dataget_col, int _array_col,MATRIX_TYPE (*dataget)[_dataget_col],MATRIX_TYPE (*array)[_array_col]){
     int i;
     for(i = 1; i <= 4; i++){
-        if(dataget[0][0] == array[row - 1][i * 2 -2] && dataget[0][1] == array[row - 1][i * 2 - 1]){
+        if(dataget[0][0] == array[0][i * 2 -2] && dataget[0][1] == array[0][i * 2 - 1]){
             return i;
         }
     }
@@ -239,13 +239,10 @@ void encode_17pp(int _src_col, int _des_col, MATRIX_TYPE (*_src)[_src_col], MATR
 
     int i;
     int r = 0;
-    int NRZIUserLen = _src_col;
-    int NRZIUserLen_keep = _src_col;
+    int _src_len = _src_col;
+    int _src_len_keep = _src_col;
     int cur = 0;
-    MATRIX_TYPE array[4][8] = {{0,0,1,1,1,0,0,1},
-                               {0,0,1,1,1,0,0,1},
-                               {0,0,1,1,1,0,0,1},
-                               {0,0,1,1,1,0,0,1}};
+    MATRIX_TYPE array[4][8] = {{0,0,1,1,1,0,0,1}};
     int out_index = 0;
     int last_channel_bit = 0;
     int vssf = 0;
@@ -261,30 +258,32 @@ void encode_17pp(int _src_col, int _des_col, MATRIX_TYPE (*_src)[_src_col], MATR
     int very_special_state_index = 0;
     int zero_count = 0;
     int flag_zero = 0;
-    while(NRZIUserLen > 0){
+    MATRIX_TYPE * value_cur = NULL;
+    MATRIX_TYPE *value_cur2 = NULL;
+    while(_src_len > 0){
         flag = 1;
         index_new_turn = 0;
         row = 1;
         flag_terminate = 0;
         flag_zero = 0;
-        if(NRZIUserLen_keep - cur <= 4){
-            for(i = cur; i < NRZIUserLen_keep; i++){
+        if(_src_len_keep - cur <= 4){
+            for(i = cur; i < _src_len_keep; i++){
                 if(_src[0][i] != 0){
                     flag_zero = 1;
                     break;
                 }
             }
             if(flag_zero == 0){
-                zero_count = NRZIUserLen_keep - cur;
+                zero_count = _src_len_keep - cur;
                 if(zero_count == 3 || zero_count ==4){
                     out_index = 4;
                     flag_terminate = 1;
-                    NRZIUserLen = 0;
+                    _src_len = 0;
                 }
                 if(zero_count == 2 || zero_count == 1){
                     out_index = 1;
                     flag_terminate = 1;
-                    NRZIUserLen = 0;
+                    _src_len = 0;
                 }
             }
         }
@@ -293,22 +292,22 @@ void encode_17pp(int _src_col, int _des_col, MATRIX_TYPE (*_src)[_src_col], MATR
             dataget[0][0] = _src[0][cur];
             dataget[0][1] = _src[0][cur + 1];
             cur = cur + 2;
-            NRZIUserLen = NRZIUserLen - 2;
-            index = compare(2,8,dataget,array,row);
+            _src_len = _src_len - 2;
+            index = compare(2,8,dataget,array);
             switch(index){
                 case 1:
                     vssf = vssf != 4? 0 : 4;
                     index_new_turn = index_new_turn + 3;
                     if(r == 3){
                         out_index = 10;
-                        if(NRZIUserLen_keep - cur >= 2){
+                        if(_src_len_keep - cur >= 2){
                             dataget[0][0] = _src[0][cur];
                             dataget[0][1] = _src[0][cur + 1];
-                            index = compare(2,8,dataget,array,4);
+                            index = compare(2,8,dataget,array);
                             if(index == 1){
                                 out_index = 13;
                                 cur = cur + 2;
-                                NRZIUserLen = NRZIUserLen - 2;
+                                _src_len = _src_len - 2;
                             }
                         }
                     }
@@ -317,13 +316,7 @@ void encode_17pp(int _src_col, int _des_col, MATRIX_TYPE (*_src)[_src_col], MATR
 
                 case 2: //11
                     out_index  = 1 + index_new_turn;
-                    if(vssf == 0 || vssf == 2){
-                        vssf = vssf + 1;
-                    }else{
-                        if(vssf != 4){
-                            vssf = 0;
-                        }
-                    }
+                    vssf = (vssf == 0 || vssf == 2) ? vssf + 1 : (vssf != 4) ? 0 : 4;
                     if(r == 1 && last_channel_bit == 0){
                         out_index = 14;
                     }
@@ -333,15 +326,15 @@ void encode_17pp(int _src_col, int _des_col, MATRIX_TYPE (*_src)[_src_col], MATR
                 case 3: //10
                     out_index = 2 + index_new_turn;
                     vssf = vssf != 4? 0: 4;
-                    if(r == 3 && NRZIUserLen_keep - cur  >= 2){
+                    if(r == 3 && _src_len_keep - cur  >= 2){
                         special_cur = cur;
                         dataget[0][0] = _src[0][special_cur];
                         dataget[0][1] = _src[0][special_cur + 1];
-                        special_index = compare(2,8,dataget,array,4);
+                        special_index = compare(2,8,dataget,array);
                         if(special_index == 1){
                             out_index = 12;
                             cur = special_cur + 2;
-                            NRZIUserLen = NRZIUserLen - 2;
+                            _src_len = _src_len - 2;
                         }
                     }
                     flag = 0;
@@ -349,20 +342,13 @@ void encode_17pp(int _src_col, int _des_col, MATRIX_TYPE (*_src)[_src_col], MATR
                 
                 case 4: //01
                     out_index = 3 + index_new_turn;
-                    if(vssf == 1){
-                        vssf = vssf + 1;
-                    }else{
-                        if(vssf != 4){
-                            vssf = 0;
-                        }
-                    }
+                    vssf = vssf == 1 ? vssf+1 : (vssf != 4)? 0 : 4;
                     flag = 0;
                     break;
             }
-
-
         }
-        MATRIX_TYPE * value_cur = out_array[out_index];
+
+        value_cur = out_array[out_index];
         while(*value_cur != 2){
             _des[0][des_cur++] = *value_cur;
             value_cur++;
@@ -372,7 +358,7 @@ void encode_17pp(int _src_col, int _des_col, MATRIX_TYPE (*_src)[_src_col], MATR
         }
         if(vssf == 4){
             if(out_array[out_index][0] == 0 && out_array[out_index][1] == 1 && out_array[out_index][2] == 0){
-                MATRIX_TYPE *value_cur2 = out_array[11];
+                value_cur2 = out_array[11];
                 while(*value_cur2 != 2){
                     _des[0][very_special_state_index++] = *value_cur2;
                     value_cur2++;
