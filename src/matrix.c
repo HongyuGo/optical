@@ -469,15 +469,31 @@ Matrix* M_Conv(Matrix* _mat1, Matrix* _mat2) {
     return _mat_result;
 }
 
-Matrix* M_Rever(Matrix* _mat,int row){
+Matrix* M_Rever(Matrix* _mat, int row) {
     MATRIX_TYPE temp;
-    for(int i=0;i<_mat->column/2;i++){
-		temp = _mat->data[row-1][i];
-		_mat->data[row-1][i] = _mat->data[row-1][_mat->column -i-1];
-		_mat->data[row-1][_mat->column - i - 1] = temp;
+    for (int i = 0; i < _mat->column / 2; i++) {
+        temp = _mat->data[row - 1][i];
+        _mat->data[row - 1][i] = _mat->data[row - 1][_mat->column - i - 1];
+        _mat->data[row - 1][_mat->column - i - 1] = temp;
     }
     return _mat;
 }
+
+Matrix* M_Ones(int row, int column) {
+    Matrix* Zero_mat = (Matrix*)malloc(sizeof(Matrix));
+    int i, j;
+    Zero_mat->column = column;
+    Zero_mat->row = row;
+    MATRIX_TYPE** data = GetMemory(Zero_mat->row, Zero_mat->column);
+    for (i = 0; i < Zero_mat->row; i++) {
+        for (j = 0; j < Zero_mat->column; j++) {
+            data[i][j] = 1;
+        }
+    }
+    Zero_mat->data = data;
+    return Zero_mat;
+}
+
 /**/
 Matrix* viterbi_mlse(int gpr_len, Matrix* fk1, Matrix* gpr_coeff) {
     /*

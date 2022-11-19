@@ -39,7 +39,9 @@
     "@ERROR: Matrix_Dimensions Wrong!\n\tDetails:(M_Dia_Inv_002)_mat_left->column != _mat_right->row\n"
 #define M_Dia_Inv_023 \
     "@ERROR: Matrix is not invertible!\n\t Details:(M_Dia_Inv_023)Please Check: Inverse element of Dia == 0! \n"
-
+#define M_eigen_max_021                                                                                           \
+    "@ERROR: Matrix_Dimensions Wrong!\n\tDetails:(M_eigen_max_021)Mat->column != Mat->row!\n\t\t(For eigen, the " \
+    "Matrix must be a square matrix!)\n"
 extern int SNR;
 extern char constraint;
 extern char method;

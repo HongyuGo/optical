@@ -25,6 +25,12 @@ typedef struct _Elementary_Transformation {
     struct _Elementary_Transformation* next_E_trans;
 } Etrans_struct;
 
+/*Store the result of matrix_eigen*/
+typedef struct _matrix_eigen_struct_single {
+    Matrix* eigen_matrix;
+    double eigen_value;
+} M_eigen_struct;
+
 /*trellis*/
 typedef struct {
     int input;
@@ -82,6 +88,10 @@ Matrix* M_limit(Matrix* _mat);
 Matrix* M_Conv(Matrix* _mat1, Matrix* _mat2);
 /*Matrix Reverse*/
 Matrix* M_Rever(Matrix* _mat, int row);
+/*Matrix Max Eigenvalue(vec)*/
+M_eigen_struct* M_eigen_max(Matrix* _mat);
+/*Generate Ones _matrix*/
+Matrix* M_Ones(int row, int column);
 /*viterbi_mlse*/
 Matrix* viterbi_mlse(int gpr_length, Matrix* fk1, Matrix* gpr_coeff);
 #endif

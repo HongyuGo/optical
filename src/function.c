@@ -200,8 +200,8 @@ Matrix* LMS(Matrix* x, Matrix* d, MATRIX_TYPE delta, int N) {
         Matrix* x1 = M_Cut(x, 1, 1, n - N + 1, n);
         x1 = M_Rever(x1, 1);
         Matrix* x1_T = M_T(x1);
-        y->data[0][n-1] = M_mul(h, x1_T)->data[0][0];
-        error = d->data[0][n-1] - y->data[0][n-1];
+        y->data[0][n - 1] = M_mul(h, x1_T)->data[0][0];
+        error = d->data[0][n - 1] - y->data[0][n - 1];
         if (error > 0)
             error = 1;
         else if (error < 0)

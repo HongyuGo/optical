@@ -1,4 +1,5 @@
 #include "main.h"
+#include "function.h"
 #include "matrix.h"
 #include "params.h"
 
@@ -10,7 +11,7 @@ int main() {
     Matrix* BER1 = M_Zeros(SNR_len, 1);
     Matrix* BER2 = M_Zeros(SNR_len, 1);
     Matrix* BER3 = M_Zeros(SNR_len, 1);
-
+    Matrix* gpr_targets = Matrix_gen(1, 5, gpr_target);
     for (int isnr = 1; isnr <= SNR_len; isnr++) {
         int numBits = 0;
         int numErrs = 0;
@@ -84,26 +85,35 @@ int main() {
             // Matrix* gpr_coeff = return_back[1];
             // M_print(gpr_coeff, "gpr_coeff");
             // Write_fir_gpr(fir_taps1,gpr_coeff);
-            Matrix* fk_filter=rk_normarlized;
-            Matrix* temp_output = M_Conv(ak, gpr_target);
-            Matrix* ideal_output = M_Cut(temp_output,1,1,2,temp_output->column-3);
-            Matrix* un = M_Cut(fk_filter,1,1,7,ideal_output->column+6);
-            Matrix* un_T=M_T(un);
-            Matrix* un_mul=M_mul(un, un_T);
-
-            fe = max(eig(un*un.'));
-            mu = 2*(1/fe);  
-            Matrix* fir_taps_lms=
-            Matrix* fk_lms = M_Conv(, fir_taps_lms);
+            Matrix* fk_filter = rk_normarlized;
+            Matrix* temp_output = M_Conv(ak, gpr_targets);
+            Matrix* ideal_output = M_Cut(temp_output, 1, 1, 2, temp_output->column - 3);
+            // Matrix* un = M_Cut(fk_filter, 1, 1, 7, ideal_output->column + 6);
+            // Matrix* un_T = M_T(un);
+            // Matrix* un_mul = M_mul(un, un_T);
+            // MATRIX_TYPE fe = M_eigen_struct(un_mul);
+            // MATRIX_TYPE mu = 2 * (1 / fe);
+            MATRIX_TYPE mu = 0.002;
+            Matrix* fk_filter_cut = M_Cut(fk_filter, 1, 1, 7, ideal_output->column + 6);
+            Matrix* fir_taps_lms = LMS(fk_filter_cut, ideal_output, mu, fir_length);
+            Matrix* fk_lms = M_Conv(fk_filter_cut, fir_taps_lms);
+            MATRIX_TYPE min_fk_lms = M_Min_value(*fk_lms->data, fk_lms->column);
+            MATRIX_TYPE max_fk_lms = M_Max_value(*fk_lms->data, fk_lms->column);
+            for (int Norma_i = 0; Norma_i < fk_lms->column; Norma_i++) {
+                fk_lms->data[0][Norma_i] =
+                    2.0 * (fk_lms->data[0][Norma_i] - min_fk_lms) / (max_fk_lms - min_fk_lms) - 1.0;
+            }
+            fk_lms = M_numsub(fk_lms, -1);
+            fk_lms = M_nummul(fk_lms, 4);
             // M_print(fk1,"fk1");
             // Matrix* detected = viterbi_mlse(gpr_length, fk1, gpr_coeff);
             // M_print(detected, "detected");
 
-            free(return_back);
+            // free(return_back);
             // M_free(detected);
-            M_free(fk1);
-            M_free(fir_taps1);
-            M_free(gpr_coeff);
+            // M_free(fk1);
+            // M_free(fir_taps1);
+            // M_free(gpr_coeff);
             M_free(rk_normarlized);
             M_free(rk);
             M_free(ak);
