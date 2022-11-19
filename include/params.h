@@ -9,11 +9,11 @@
 #define T (1)
 #define TL (0.05587)
 #define S ((t0) / (TL))
-#define SectorLength (10)
+#define SectorLength (20)
 // #define delta (0.1)
 #define edge_width (((fir_length)-1) / 2)
 #define sigma_jitter ((0.01) * (TL))
-#define KWinLen 1
+#define KWinLen 0
 #define max_metric 1000000
 
 #define _END_ -1

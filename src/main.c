@@ -61,7 +61,6 @@ int main() {
             // M_print(codedwords,"co");
             // M_print(ak,"ak");
             ak = M_numsub(M_nummul(ak, 2.0), 1.0);
-            M_print(ak, "ak");
             Matrix* rk = M_Zeros(1, CodedBitsLength + 1 + KWinLen);
             for (int i = 0; i < CodedBitsLength + 1 + KWinLen; i++) {
                 double jitter = sigma_jitter;
@@ -85,7 +84,9 @@ int main() {
             // Matrix* gpr_coeff = return_back[1];
             // M_print(gpr_coeff, "gpr_coeff");
             // Write_fir_gpr(fir_taps1,gpr_coeff);
-            Matrix* fk_filter = rk_normarlized;
+            MATRIX_TYPE filter_temp[13]={-0.0025,-0.0090,-0.0145,0.0177,0.1166,0.2417,0.3001,0.2417,0.1166,0.0177,-0.0145,-0.0090,-0.0025};
+            Matrix* fir_taps_filter=Matrix_gen(1, 13, filter_temp);
+            Matrix* fk_filter = M_Conv(rk_normarlized,fir_taps_filter);
             Matrix* temp_output = M_Conv(ak, gpr_targets);
             Matrix* ideal_output = M_Cut(temp_output, 1, 1, 2, temp_output->column - 3);
             // Matrix* un = M_Cut(fk_filter, 1, 1, 7, ideal_output->column + 6);
