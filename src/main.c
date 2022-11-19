@@ -84,9 +84,10 @@ int main() {
             // Matrix* gpr_coeff = return_back[1];
             // M_print(gpr_coeff, "gpr_coeff");
             // Write_fir_gpr(fir_taps1,gpr_coeff);
-            MATRIX_TYPE filter_temp[13]={-0.0025,-0.0090,-0.0145,0.0177,0.1166,0.2417,0.3001,0.2417,0.1166,0.0177,-0.0145,-0.0090,-0.0025};
-            Matrix* fir_taps_filter=Matrix_gen(1, 13, filter_temp);
-            Matrix* fk_filter = M_Conv(rk_normarlized,fir_taps_filter);
+            MATRIX_TYPE filter_temp[13] = {-0.0025, -0.0090, -0.0145, 0.0177,  0.1166,  0.2417, 0.3001,
+                                           0.2417,  0.1166,  0.0177,  -0.0145, -0.0090, -0.0025};
+            Matrix* fir_taps_filter = Matrix_gen(1, 13, filter_temp);
+            Matrix* fk_filter = M_Conv(rk_normarlized, fir_taps_filter);
             Matrix* temp_output = M_Conv(ak, gpr_targets);
             Matrix* ideal_output = M_Cut(temp_output, 1, 1, 2, temp_output->column - 3);
             // Matrix* un = M_Cut(fk_filter, 1, 1, 7, ideal_output->column + 6);
@@ -106,13 +107,16 @@ int main() {
             }
             fk_lms = M_numsub(fk_lms, -1);
             fk_lms = M_nummul(fk_lms, 4);
-            Matrix *detected = viterbi_mlse(gpr_targets->column,fk_lms,gpr_target);
-            M_print(detected, "detected");
-            Matrix *uhat = M_Cut(detected,1,1,1,codedlen);
-            ak = M_nummul(M_numsub(ak,-1), 0.5);
-            ak=M_Cut(ak,1,1,2,ak->column);
-            int cur_err = M_Compare( uhat,ak);
-            printf("err:%d\n",cur_err);
+            M_print(fk_lms,"fk");
+            M_print(gpr_targets,"gpr_targets");
+            M_print(fir_taps_filter,"fir");
+            Matrix* detected = viterbi_mlse(gpr_targets->column, fk_lms, M_T(gpr_targets));
+            // M_print(detected, "detected");
+            Matrix* uhat = M_Cut(detected, 1, 1, 1, codedlen);
+            ak = M_nummul(M_numsub(ak, -1), 0.5);
+            ak = M_Cut(ak, 1, 1, 2, ak->column);
+            int cur_err = M_Compare(uhat, ak);
+            printf("err:%d\n", cur_err);
             // M_print(fk1,"fk1");
             // Matrix* detected = viterbi_mlse(gpr_length, fk1, gpr_coeff);
             // M_print(detected, "detected");

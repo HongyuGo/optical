@@ -39,13 +39,13 @@ typedef struct {
     int next;
     // int counter; /*we can default that every state has two branch*/
 } Trellis_nst;
-typedef struct{
+typedef struct {
     int input[2];
     MATRIX_TYPE output[2];
-    //int next;
+    // int next;
     int pre[2];
     int counter;
-}Trellis_pst;
+} Trellis_pst;
 
 MATRIX_TYPE** GetMemory(int row, int col);
 /* Generate Matrix Struct */
@@ -94,7 +94,7 @@ M_eigen_struct* M_eigen_max(Matrix* _mat);
 /*Generate Ones _matrix*/
 Matrix* M_Ones(int row, int column);
 /*compare the diff of two Matrix*/
-int M_Compare(Matrix *mat1,Matrix *mat2);
+int M_Compare(Matrix* mat1, Matrix* mat2);
 /*viterbi_mlse*/
 Matrix* viterbi_mlse(int gpr_length, Matrix* fk1, Matrix* gpr_coeff);
 #endif

@@ -15,7 +15,7 @@ Matrix* Caculate_gpr_coeff(Matrix* R_matrix, Matrix* A_matrix, Matrix* T_matrix,
                            MATRIX_TYPE lagrange);
 Matrix* Caculate_fir_coeff(Matrix* R_matrix, Matrix* T_matrix, Matrix* gpr_coeff);
 /*viterbi_mlse*/
-Matrix *viterbi_mlse(int gpr_len,Matrix *fk1, Matrix *gpr_coeff);
+Matrix* viterbi_mlse(int gpr_len, Matrix* fk1, Matrix* gpr_coeff);
 MATRIX_TYPE Xor(MATRIX_TYPE a, MATRIX_TYPE b);
 Matrix* LMS(Matrix* x, Matrix* d, MATRIX_TYPE delta, int N);
 #endif

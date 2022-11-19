@@ -495,16 +495,15 @@ Matrix* M_Ones(int row, int column) {
 }
 
 /**/
-int M_Compare(Matrix *mat1,Matrix *mat2){
+int M_Compare(Matrix* mat1, Matrix* mat2) {
     int len = mat1->column;
     int errs = 0;
-    if(mat1->row==1&&mat2->row==1){
-        if(mat1->column == mat2->column){
-            for(int i=0;i<len;++i){
-                if(mat1->data[0][i]!=mat2->data[0][i]) errs += 1;
+    if (mat1->row == 1 && mat2->row == 1) {
+        if (mat1->column == mat2->column) {
+            for (int i = 0; i < len; ++i) {
+                if (mat1->data[0][i] != mat2->data[0][i]) errs += 1;
             }
-        }
-        else{
+        } else {
             printf("Can't match the same length");
             return -1;
         }
