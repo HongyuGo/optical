@@ -107,9 +107,9 @@ int main() {
             }
             fk_lms = M_numsub(fk_lms, -1);
             fk_lms = M_nummul(fk_lms, 4);
-            M_print(fk_lms,"fk");
-            M_print(gpr_targets,"gpr_targets");
-            M_print(fir_taps_filter,"fir");
+            // M_print(fk_lms,"fk");
+            // M_print(gpr_targets,"gpr_targets");
+            // M_print(fir_taps_filter,"fir");
             Matrix* detected = viterbi_mlse(gpr_targets->column, fk_lms, M_T(gpr_targets));
             // M_print(detected, "detected");
             Matrix* uhat = M_Cut(detected, 1, 1, 1, codedlen);
