@@ -18,13 +18,18 @@ typedef struct _matrix_inverse_struct {
 
 /*Store the Operation of Elementary_Transformation*/
 typedef struct _Elementary_Transformation {
-
     int minuend_line;
     int subtractor_line;
     TRANS_TYPE scale;
     struct _Elementary_Transformation *forward_E_trans;
     struct _Elementary_Transformation *next_E_trans;
 } Etrans_struct;
+
+/*Store the result of matrix_eigen*/
+typedef struct _matrix_eigen_struct_single {
+    Matrix *eigen_matrix;
+    double eigen_value;
+} M_eigen_struct;
 
 /*trellis*/
 typedef struct {
@@ -35,10 +40,11 @@ typedef struct {
     // int counter; /*we can default that every state has two branch*/
 } Trellis_nst;
 typedef struct {
-    int input;
-    MATRIX_TYPE output;
+    int input[2];
+    MATRIX_TYPE output[2];
     // int next;
-    int pre;
+    int pre[2];
+    int counter;
 } Trellis_pst;
 
 MATRIX_TYPE **GetMemory(int row, int col);
@@ -84,6 +90,14 @@ Matrix *M_T(Matrix *_mat_source);
 Matrix *M_limit(Matrix *_mat);
 /*Matrix Convolution*/
 Matrix *M_Conv(Matrix *_mat1, Matrix *_mat2);
+/*Matrix Reverse*/
+Matrix *M_Rever(Matrix *_mat, int row);
+/*Matrix Max Eigenvalue(vec)*/
+M_eigen_struct *M_eigen_max(Matrix *_mat);
+/*Generate Ones _matrix*/
+Matrix *M_Ones(int row, int column);
+/*compare the diff of two Matrix*/
+int M_Compare(Matrix *mat1, Matrix *mat2);
 /*viterbi_mlse*/
 Matrix *viterbi_mlse(int gpr_length, Matrix *fk1, Matrix *gpr_coeff);
 #endif
