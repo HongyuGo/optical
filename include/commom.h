@@ -3,11 +3,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "matrix.h"
 #include <string.h>
+#include "matrix.h"
 
-
-
-void Write_fir_gpr(Matrix *fir_coeff, Matrix *gpr_coeff);
+void Write_fir_gpr(Matrix* fir_coeff, Matrix* gpr_coeff);
 
 #endif
