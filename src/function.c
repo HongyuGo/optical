@@ -237,7 +237,7 @@ void encode_17pp(int _src_col, int _des_col, MATRIX_TYPE (*_src)[_src_col], MATR
     out_array[13] = code13;
     out_array[14] = code14;
 
-
+    int i;
     int r = 0;
     int NRZIUserLen = _src_col;
     int NRZIUserLen_keep = _src_col;
@@ -259,11 +259,35 @@ void encode_17pp(int _src_col, int _des_col, MATRIX_TYPE (*_src)[_src_col], MATR
     int index = 0;
     int des_cur = 0;
     int very_special_state_index = 0;
+    int zero_count = 0;
+    int flag_zero = 0;
     while(NRZIUserLen > 0){
         flag = 1;
         index_new_turn = 0;
         row = 1;
         flag_terminate = 0;
+        flag_zero = 0;
+        if(NRZIUserLen_keep - cur <= 4){
+            for(i = cur; i < NRZIUserLen_keep; i++){
+                if(_src[0][i] != 0){
+                    flag_zero = 1;
+                    break;
+                }
+            }
+            if(flag_zero == 0){
+                zero_count = NRZIUserLen_keep - cur;
+                if(zero_count == 3 || zero_count ==4){
+                    out_index = 4;
+                    flag_terminate = 1;
+                    NRZIUserLen = 0;
+                }
+                if(zero_count == 2 || zero_count == 1){
+                    out_index = 1;
+                    flag_terminate = 1;
+                    NRZIUserLen = 0;
+                }
+            }
+        }
         while(r < 3 && flag == 1 && flag_terminate == 0){
             r = r + 1;
             dataget[0][0] = _src[0][cur];
