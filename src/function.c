@@ -5,7 +5,7 @@
 #include "params.h"
 
 double h_response(double t, double TT, double TLL, double SS) {
-    return 0.5 * (erf(2 * sqrt(2) * t / (SS * TLL)) - erf(2 * sqrt(2) * (t - TT) / (SS * TLL)));
+    return (2*sqrt(2)/(SS*TLL*sqrt(pi)))*exp(-2*pow((2*t/(SS*TLL)),2));
 }
 
 double readback(double t, double jitter, Matrix* a, double SS, double TT, double TLL) {
@@ -407,27 +407,37 @@ Matrix* viterbi_mlse(int gpr_len, Matrix* fk1, Matrix* gpr_coeff) {
         /*b is the branch value*/
         for (int b = 1; b <= 2; ++b) {
             int cur = s + numOfStates * (b - 1); /*can understand cur = (s,b) or (nextstate,b)*/
-            trellis_nst[cur]->input = 2 * b - 3;
-            trellis_nst[cur]->output = (2 * b - 3) * gpr_coeff->data[0][0];
+            trellis_nst[cur]->input = b - 1;
+            trellis_nst[cur]->output = (b - 1) * gpr_coeff->data[0][0];
             for (int i = 1, tmp = s; i <= stateSize; ++i) {
                 /*int tmp;put the initialization here is incorrect*/
-                trellis_nst[cur]->output += gpr_coeff->data[i][0] * (2 * (tmp & 1) - 1);
+                //trellis_nst[cur]->output += gpr_coeff->data[i][0] * (2 * (tmp & 1) - 1); /*(-1,1)*/
+                trellis_nst[cur]->output += gpr_coeff->data[i][0] * (tmp & 1);/*(0,1)*/
                 // printf("tmp:%d,gpr_coeff->data[i][0]:%lf,(2*(tmp&1)-1):%d
                 // ",tmp,gpr_coeff->data[i][0],(2*(tmp&1)-1));
                 tmp = tmp >> 1;
                 // printf("tmp:%d  ",tmp);
             }
+            if(s==2||s==4||s==5||s==10||s==11||s==13){
+                trellis_nst[s]->output=pow(10,6);
+                trellis_nst[s+numOfStates]->output=pow(10,6);
+            }
+            else if(s==1||s==9){
+                if(b==1)
+                    trellis_nst[s]->output=pow(10,6);
+            }
+            else if(s==6||s==14){
+                if(b==2)
+                    trellis_nst[s+numOfStates]->output=pow(10,6);
+            }
             trellis_nst[cur]->next = ((s << 1 | 1) & ((1 << stateSize) + b - 3)); /*update s*/
-            // printf("nst - curstate:%d, input:%d, output:%lf,
-            // nextstate:%d\n",s, trellis_nst[cur]->input,
-            // trellis_nst[cur]->output,trellis_nst[cur]->next);
+            // printf("nst - curstate:%d, input:%d, output:%lf,nextstate:%d\n",s, trellis_nst[cur]->input,trellis_nst[cur]->output,trellis_nst[cur]->next);
             int nextstate = trellis_nst[cur]->next;
             trellis_pst[nextstate]->counter += 1;
             trellis_pst[nextstate]->input[trellis_pst[nextstate]->counter - 1] = trellis_nst[cur]->input;
             trellis_pst[nextstate]->output[trellis_pst[nextstate]->counter - 1] = trellis_nst[cur]->output;
             trellis_pst[nextstate]->pre[trellis_pst[nextstate]->counter - 1] = s;
-            // printf("trellis.pst(%d,%d).prestate=
-            // %d\n",nextstate,trellis_pst[nextstate]->counter,s);
+            // printf("trellis.pst(%d,%d).prestate=%d\n",nextstate,trellis_pst[nextstate]->counter,s);
         }
     }
 
@@ -453,17 +463,18 @@ Matrix* viterbi_mlse(int gpr_len, Matrix* fk1, Matrix* gpr_coeff) {
     mat_state_metric->data[0][0] = 0; /*assume that the initial state is 0*/
     double* state_value = (double*)malloc(2 * sizeof(double));
     double branch_metric;
+    double f;
     for (int i = 1; i < depth; ++i) {
         for (int j = 0; j < numOfStates; ++j) {
             for (int b = 1; b <= 2; ++b) {
                 double out = trellis_pst[j]->output[b - 1];
-                double f = fk1->data[0][i - 1];
+                f = fk1->data[0][i - 1];
                 branch_metric = (f - out) * (f - out);
-                int c = trellis_pst[j]->pre[b - 1];
-                c = c * 1;
+                // int c = trellis_pst[j]->pre[b - 1];
+                // c = c * 1;
                 state_value[b - 1] = mat_state_metric->data[trellis_pst[j]->pre[b - 1]][i - 1] + branch_metric;
             }
-            // printf("v0:%lf,v1:%lf->",state_value[0],state_value[1]);
+            //printf("v0:%lf,v1:%lf->",state_value[0],state_value[1]);
             if (state_value[0] > state_value[1]) {
                 mat_state_metric->data[j][i] = state_value[1];
                 survivor_path[j][i - 1] = 2;
@@ -479,9 +490,10 @@ Matrix* viterbi_mlse(int gpr_len, Matrix* fk1, Matrix* gpr_coeff) {
                     survivor_path[j][i - 1] = 2;  // for branch 2
             }
             // printf("j%d,survivor_path%d ",j,survivor_path[j][i-1]);
-            // printf("%d  ",survivor_path[j][i-1]);
+            //printf("%d  ",survivor_path[j][i-1]);
             // printf("%.4lf  ",mat_state_metric->data[j][i-1]);
         }
+        
         // printf("\n");
     }
     int state = 0;
@@ -492,8 +504,9 @@ Matrix* viterbi_mlse(int gpr_len, Matrix* fk1, Matrix* gpr_coeff) {
         // printf("%.4lf",mat_detected_output->data[0][i-1]);
         state = trellis_pst[state]->pre[-1 + survivor_path[state][i - 1]];
     }
+    //M_print(mat_state_metric, "mat_state_metric");
     /*map output (-1,1)->(0,1)*/
-    mat_detected_output = M_nummul(M_numsub(mat_detected_output, -1.0), 0.5); /*(m+1)*2*/
+    // mat_detected_output = M_nummul(M_numsub(mat_detected_output, -1.0), 0.5); /*(m+1)*2*/
     /*free the space of avoid Memory leak*/
     for (int i = 0; i < numOfStates * 2; ++i) {
         free(trellis_nst[i]);
@@ -522,7 +535,6 @@ Matrix* LMS(Matrix* x, Matrix* d, MATRIX_TYPE delta, int N) {
         x1 = M_Rever(x1, 1);
         Matrix* x1_T = M_T(x1);
         y->data[0][n - 1] = M_mul(h, x1_T)->data[0][0];
-        M_print(M_mul(h, x1_T), "yn");
         error = d->data[0][n - 1] - y->data[0][n - 1];
         if (error > 0)
             error = 1;
@@ -532,4 +544,13 @@ Matrix* LMS(Matrix* x, Matrix* d, MATRIX_TYPE delta, int N) {
         h = M_add_sub(1, h, -1, x1_mul);
     }
     return h;
+}
+Matrix* mapminmax(Matrix* temp){
+    MATRIX_TYPE min_temp = M_Min_value(*temp->data, temp->column);
+    MATRIX_TYPE max_temp = M_Max_value(*temp->data, temp->column);
+    for (int Norma_i = 0; Norma_i < temp->column; Norma_i++) {
+        temp->data[0][Norma_i] =
+        2.0 * (temp->data[0][Norma_i] - min_temp) / (max_temp - min_temp) - 1.0;
+    }
+    return temp;
 }

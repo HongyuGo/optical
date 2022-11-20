@@ -12,9 +12,10 @@
 #define SectorLength (4096)
 // #define delta (0.1)
 #define edge_width (((fir_length)-1) / 2)
-#define sigma_jitter ((0.01) * (TL))
+#define sigma_jitter ((0.0) * (TL))
 #define KWinLen 0
 #define max_metric 1000000
+#define pi (3.1415926)
 
 #define _END_ -1
 #define _HEAD_ 1
